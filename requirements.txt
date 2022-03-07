@@ -1,13 +1,11 @@
 # Server
 uvicorn
-gunicorn
 
 # Web
 flask
 flask-admin
 fastapi
 fastapi-pagination
-starlette
 
 pydantic
 pydantic[email,dotenv]
