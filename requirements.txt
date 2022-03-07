@@ -1,0 +1,21 @@
+# Server
+uvicorn
+
+# Web
+flask
+flask-admin
+fastapi
+fastapi-pagination
+
+pydantic
+pydantic[email,dotenv]
+
+# DB
+alembic
+
+SQLAlchemy
+sqlalchemy-utils
+sqlalchemy2-stubs
+
+asyncpg
+psycopg2-binary
