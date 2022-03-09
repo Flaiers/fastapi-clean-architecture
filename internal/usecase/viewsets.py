@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, APIRouter
 from fastapi_pagination import paginate, Params, Page
+from fastapi.types import DecoratedCallable
 from starlette.status import *
 
 from internal.app.database import get_session, Base
@@ -10,13 +11,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import sqlalchemy
 
+from typing import Any, List, Callable
+
 from pydantic import BaseModel
 
 from inspect import isfunction
 
-from typing import Any, List
-
-import enum
+from enum import Enum
 
 
 __all__ = ["ViewSetMetaClass"]
@@ -34,7 +35,7 @@ class BaseConfig:
 class APIMethods:
 
     model: Base = Base
-    fields: enum.Enum = enum.Enum
+    fields: Enum = Enum
     filter_schema: BaseModel = BaseModel
     create_schema: BaseModel = BaseModel
     update_schema: BaseModel = BaseModel
@@ -54,8 +55,9 @@ class APIMethods:
     @classmethod
     @property
     def all(cls) -> List[str]:
-        return [k for k, v in cls.__dict__.items()
-                if not k.startswith(("_")) and isfunction(v)]
+        return [key for key, value in cls.__dict__.items()
+                if not (key.startswith('__') and key.endswith('__'))
+                and isfunction(value)]
 
     async def list(
         self,
@@ -192,30 +194,30 @@ class APIDecorators:
         self.router: APIRouter = router
         self.schema: BaseModel = schema
 
-    def list(self):
+    def list(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.router.get("", name=f"Read {self.name}s",
                                response_model=Page[self.schema])
 
-    def filter(self):
+    def filter(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.router.get("/filter", name=f"Filter {self.name}",
                                response_model=Page)
 
-    def retrieve(self):
+    def retrieve(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.router.get("/{id}", name=f"Read {self.name}",
                                response_model=self.schema)
 
-    def create(self):
+    def create(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.router.post("", name=f"Create {self.name}",
                                 status_code=HTTP_201_CREATED)
 
-    def delete(self):
+    def delete(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.router.delete("/{id}", name=f"Delete {self.name}")
 
-    def update(self):
+    def update(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.router.put("/{id}", name=f"Update {self.name}",
                                response_model=self.schema)
 
-    def partial_update(self):
+    def partial_update(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
         return self.router.patch("/{id}", name=f"Partial update {self.name}",
                                  response_model=self.schema)
 
@@ -251,7 +253,7 @@ class ViewSetMetaClass(type):
         setattr(cls, "query", getattr(cls, "query", select(cls.model)))
         setattr(cls, "router", getattr(cls, "router", APIRouter()))
         setattr(cls, "fields", object)
-        cls.fields = enum.Enum(
+        cls.fields = Enum(
             cls.model.__name__,
             {field: field for field in cls.schema.__fields__.keys()},
             type=str
