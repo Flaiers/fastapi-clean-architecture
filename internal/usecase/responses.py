@@ -17,3 +17,15 @@ class SucessfulResponse(JSONResponse):
             content={"sucessful": True}
         )
         super().__init__(*args, **kwargs)
+
+    @staticmethod
+    def get_response(status):
+        response = {
+            "description": "Successful Response",
+            "content": {
+                "application/json": {
+                    "example": {"sucessful": True},
+                }
+            }
+        }
+        return {status: response}

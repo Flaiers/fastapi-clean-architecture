@@ -3,20 +3,19 @@ from fastapi_pagination import paginate, Params, Page
 from fastapi.types import DecoratedCallable
 from starlette.status import *
 
-from internal.app.database import get_session, Base
-from .responses import SucessfulResponse
+from .responses import SucessfulResponse as Response
+from internal.app.database import get_session
 from .utils import OrderDirection
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 import sqlalchemy
 
-from typing import Any, List, Callable
-
 from pydantic import BaseModel
 
 from inspect import isfunction
 
+from typing import Any, List
 from enum import Enum
 
 
@@ -32,27 +31,15 @@ class BaseConfig:
     create_schema: BaseModel = BaseModel
 
 
-class APIMethods:
+class APIRoutes:
 
-    model: Base = Base
-    fields: Enum = Enum("fields",
-                        {"id": "id"},
-                        type=str)
-    filter_schema: BaseModel = BaseModel
-    create_schema: BaseModel = BaseModel
-    update_schema: BaseModel = BaseModel
+    def __init__(self, name, router, schema) -> None:
+        self.name: str = name
+        self.router: APIRouter = router
+        self.schema: BaseModel = schema
 
-    def __init__(
-        self, query, model,
-        fields, filter_schema,
-        create_schema, update_schema
-    ) -> None:
-        self.query = query
-        self.model = model
-        self.fields = fields
-        self.filter_schema = filter_schema
-        self.create_schema = create_schema
-        self.update_schema = update_schema
+        self.delete_responses = Response.get_response(HTTP_200_OK)
+        self.create_responses = Response.get_response(HTTP_201_CREATED)
 
     @classmethod
     @property
@@ -61,167 +48,48 @@ class APIMethods:
                 if not (key.startswith('__') and key.endswith('__'))
                 and isfunction(value)]
 
-    async def list(
-        self,
-        params: Params = Depends(),
-        order_by: fields = fields.id,
-        db: AsyncSession = Depends(get_session),
-        filter_query: filter_schema = Depends(),
-        order_direction: OrderDirection = OrderDirection.asc
-    ) -> Any:
-        kwargs = filter_query.dict(exclude_unset=True,
-                                   exclude_none=True)
-        direction = getattr(sqlalchemy, order_direction)
-        order_by = direction(getattr(self.model, order_by))
-        instance_set = await db.execute(
-            self.query.filter_by(**kwargs).order_by(order_by))
+    def list(self, func: DecoratedCallable) -> DecoratedCallable:
+        self.router.add_api_route("", func, methods=["GET"],
+                                  name=f"Read {self.name}s",
+                                  response_model=Page[self.schema])
+        return func
 
-        return paginate(instance_set.scalars().all(), params)
+    def filter(self, func: DecoratedCallable) -> DecoratedCallable:
+        self.router.add_api_route("/filter", func, methods=["GET"],
+                                  name=f"Filter {self.name}",
+                                  response_model=Page)
+        return func
 
-    async def filter(
-        self,
-        select_by: fields,
-        filter_by: str = "",
-        params: Params = Depends(),
-        db: AsyncSession = Depends(get_session)
-    ) -> Any:
-        if not hasattr(self.model, select_by):
-            raise HTTPException(
-                detail="Field does not exist",
-                status_code=HTTP_404_NOT_FOUND
-            )
+    def retrieve(self, func: DecoratedCallable) -> DecoratedCallable:
+        self.router.add_api_route("/{id}", func, methods=["GET"],
+                                  name=f"Read {self.name}",
+                                  response_model=self.schema)
+        return func
 
-        field = getattr(self.model, select_by)
-        instance_set = await db.execute(
-            select(field).filter(field.like(f"%{filter_by}%")))
+    def create(self, func: DecoratedCallable) -> DecoratedCallable:
+        self.router.add_api_route("", func, methods=["POST"],
+                                  name=f"Create {self.name}",
+                                  status_code=HTTP_201_CREATED,
+                                  responses=self.create_responses)
+        return func
 
-        response = set(instance_set.scalars().all())
+    def delete(self, func: DecoratedCallable) -> DecoratedCallable:
+        self.router.add_api_route("/{id}", func, methods=["DELETE"],
+                                  name=f"Delete {self.name}",
+                                  responses=self.delete_responses)
+        return func
 
-        return paginate(tuple(response), params)
+    def update(self, func: DecoratedCallable) -> DecoratedCallable:
+        self.router.add_api_route("/{id}", func, methods=["PUT"],
+                                  name=f"Update {self.name}",
+                                  response_model=self.schema)
+        return func
 
-    async def retrieve(
-        self,
-        id: int,
-        db: AsyncSession = Depends(get_session)
-    ) -> model:
-        instance = await db.execute(self.query.where(self.model.id == id))
-        instance = instance.scalar()
-        if not instance:
-            raise HTTPException(
-                detail="Instance not found",
-                status_code=HTTP_404_NOT_FOUND
-            )
-        return instance
-
-    async def create(
-        self,
-        instance: create_schema,
-        db: AsyncSession = Depends(get_session)
-    ) -> SucessfulResponse:
-        instance = self.model(**instance.dict())
-        db.add(instance)
-        await db.commit()
-        return SucessfulResponse(HTTP_201_CREATED)
-
-    async def delete(
-        self,
-        id: int,
-        db: AsyncSession = Depends(get_session)
-    ) -> SucessfulResponse:
-        instance = await db.get(self.model, id)
-        if not instance:
-            raise HTTPException(
-                detail="Instance not found",
-                status_code=HTTP_404_NOT_FOUND
-            )
-
-        await db.delete(instance)
-        await db.commit()
-
-        return SucessfulResponse()
-
-    async def update(
-        self,
-        id: int,
-        instance_update: update_schema,
-        db: AsyncSession = Depends(get_session)
-    ) -> model:
-        instance = await db.execute(self.query.where(self.model.id == id))
-        instance = instance.scalar()
-        if not instance:
-            raise HTTPException(
-                detail="Instance not found",
-                status_code=HTTP_404_NOT_FOUND
-            )
-
-        for key, value in instance_update.dict().items():
-            setattr(instance, key, value)
-
-        db.add(instance)
-        await db.commit()
-        await db.refresh(instance)
-
-        return instance
-
-    async def partial_update(
-        self,
-        id: int,
-        instance_update: update_schema,
-        db: AsyncSession = Depends(get_session)
-    ) -> model:
-        instance = await db.execute(self.query.where(self.model.id == id))
-        instance = instance.scalar()
-        if not instance:
-            raise HTTPException(
-                detail="Instance not found",
-                status_code=HTTP_404_NOT_FOUND
-            )
-
-        items = instance_update.dict(
-            exclude_unset=True, exclude_none=True).items()
-        for key, value in items:
-            setattr(instance, key, value)
-
-        db.add(instance)
-        await db.commit()
-        await db.refresh(instance)
-
-        return instance
-
-
-class APIDecorators:
-
-    def __init__(self, name, router, schema) -> None:
-        self.name: str = name
-        self.router: APIRouter = router
-        self.schema: BaseModel = schema
-
-    def list(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
-        return self.router.get("", name=f"Read {self.name}s",
-                               response_model=Page[self.schema])
-
-    def filter(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
-        return self.router.get("/filter", name=f"Filter {self.name}",
-                               response_model=Page)
-
-    def retrieve(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
-        return self.router.get("/{id}", name=f"Read {self.name}",
-                               response_model=self.schema)
-
-    def create(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
-        return self.router.post("", name=f"Create {self.name}",
-                                status_code=HTTP_201_CREATED)
-
-    def delete(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
-        return self.router.delete("/{id}", name=f"Delete {self.name}")
-
-    def update(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
-        return self.router.put("/{id}", name=f"Update {self.name}",
-                               response_model=self.schema)
-
-    def partial_update(self) -> Callable[[DecoratedCallable], DecoratedCallable]:
-        return self.router.patch("/{id}", name=f"Partial update {self.name}",
-                                 response_model=self.schema)
+    def partial_update(self, func: DecoratedCallable) -> DecoratedCallable:
+        self.router.add_api_route("/{id}", func, methods=["PATCH"],
+                                  name=f"Partial update {self.name}",
+                                  response_model=self.schema)
+        return func
 
 
 class ViewSetMetaClass(type):
@@ -239,7 +107,7 @@ class ViewSetMetaClass(type):
             raise AttributeError("Cannot be exclude and include together")
 
         methods = list()
-        all_methods = APIMethods.all[:]
+        all_methods = APIRoutes.all[:]
 
         for include_method in include:
             if include_method not in all_methods:
@@ -275,149 +143,127 @@ class ViewSetMetaClass(type):
 
 def method_generator(cls, method):
     name = cls.model.__name__
-    router: APIRouter = cls.router
+    routes = APIRoutes(name, cls.router, cls.schema)
+    route = getattr(routes, method)
 
-    if method == "list":
-        @router.get("", name=f"Read {name}s",
-                    response_model=Page[cls.schema])
-        async def list(
-            params: Params = Depends(),
-            order_by: cls.fields = cls.fields.id,
-            db: AsyncSession = Depends(get_session),
-            filter_query: cls.filter_schema = Depends(),
-            order_direction: OrderDirection = OrderDirection.asc
-        ) -> Any:
-            kwargs = filter_query.dict(exclude_unset=True,
-                                       exclude_none=True)
-            direction = getattr(sqlalchemy, order_direction)
-            order_by = direction(getattr(cls.model, order_by))
-            instance_set = await db.execute(
-                cls.query.filter_by(**kwargs).order_by(order_by))
+    async def list(
+        params: Params = Depends(),
+        order_by: cls.fields = cls.fields.id,
+        db: AsyncSession = Depends(get_session),
+        filter_query: cls.filter_schema = Depends(),
+        order_direction: OrderDirection = OrderDirection.asc
+    ) -> Any:
+        kwargs = filter_query.dict(exclude_unset=True,
+                                exclude_none=True)
+        direction = getattr(sqlalchemy, order_direction)
+        order_by = direction(getattr(cls.model, order_by))
+        instance_set = await db.execute(
+            cls.query.filter_by(**kwargs).order_by(order_by))
 
-            return paginate(instance_set.scalars().all(), params)
+        return paginate(instance_set.scalars().all(), params)
 
-    elif method == "filter":
-        @router.get("/filter", name=f"Filter {name}",
-                    response_model=Page)
-        async def filter(
-            select_by: cls.fields,
-            filter_by: str = "",
-            params: Params = Depends(),
-            db: AsyncSession = Depends(get_session)
-        ) -> Any:
-            if not hasattr(cls.model, select_by):
-                raise HTTPException(
-                    detail="Field does not exist",
-                    status_code=HTTP_404_NOT_FOUND
-                )
+    async def filter(
+        select_by: cls.fields,
+        filter_by: str = "",
+        params: Params = Depends(),
+        db: AsyncSession = Depends(get_session)
+    ) -> Any:
+        if not hasattr(cls.model, select_by):
+            raise HTTPException(
+                detail="Field does not exist",
+                status_code=HTTP_404_NOT_FOUND
+            )
 
-            field = getattr(cls.model, select_by)
-            instance_set = await db.execute(
-                select(field).filter(field.like(f"%{filter_by}%")))
+        field = getattr(cls.model, select_by)
+        instance_set = await db.execute(
+            select(field).filter(field.like(f"%{filter_by}%")))
 
-            response = set(instance_set.scalars().all())
+        response = set(instance_set.scalars().all())
 
-            return paginate(tuple(response), params)
+        return paginate(tuple(response), params)
 
-    elif method == "retrieve":
-        @router.get("/{id}", name=f"Read {name}",
-                    response_model=cls.schema)
-        async def retrieve(
-            id: int,
-            db: AsyncSession = Depends(get_session)
-        ) -> cls.model:
-            instance = await db.execute(
-                cls.query.where(cls.model.id == id))
-            instance = instance.scalar()
-            if not instance:
-                raise HTTPException(
-                    detail="Instance not found",
-                    status_code=HTTP_404_NOT_FOUND
-                )
-            return instance
+    async def retrieve(
+        id: int,
+        db: AsyncSession = Depends(get_session)
+    ) -> cls.model:
+        instance = await db.execute(cls.query.where(cls.model.id == id))
+        instance = instance.scalar()
+        if not instance:
+            raise HTTPException(
+                detail="Instance not found",
+                status_code=HTTP_404_NOT_FOUND
+            )
+        return instance
 
-    elif method == "create":
-        @router.post("", name=f"Create {name}",
-                     status_code=HTTP_201_CREATED)
-        async def create(
-            instance: cls.create_schema,
-            db: AsyncSession = Depends(get_session)
-        ) -> SucessfulResponse:
-            instance = cls.model(**instance.dict())
-            db.add(instance)
-            await db.commit()
-            return SucessfulResponse(HTTP_201_CREATED)
+    async def create(
+        instance: cls.create_schema,
+        db: AsyncSession = Depends(get_session)
+    ) -> Response:
+        instance = cls.model(**instance.dict())
+        db.add(instance)
+        await db.commit()
+        return Response(HTTP_201_CREATED)
 
-    elif method == "delete":
-        @router.delete("/{id}", name=f"Delete {name}")
-        async def delete(
-            id: int,
-            db: AsyncSession = Depends(get_session)
-        ) -> SucessfulResponse:
-            instance = await db.get(cls.model, id)
-            if not instance:
-                raise HTTPException(
-                    detail="Instance not found",
-                    status_code=HTTP_404_NOT_FOUND
-                )
+    async def delete(
+        id: int,
+        db: AsyncSession = Depends(get_session)
+    ) -> Response:
+        instance = await db.get(cls.model, id)
+        if not instance:
+            raise HTTPException(
+                detail="Instance not found",
+                status_code=HTTP_404_NOT_FOUND
+            )
 
-            await db.delete(instance)
-            await db.commit()
+        await db.delete(instance)
+        await db.commit()
 
-            return SucessfulResponse()
+        return Response()
 
-    elif method == "update":
-        @router.put("/{id}", name=f"Update {name}",
-                    response_model=cls.schema)
-        async def update(
-            id: int,
-            instance_update: cls.update_schema,
-            db: AsyncSession = Depends(get_session)
-        ) -> cls.model:
-            instance = await db.execute(
-                cls.query.where(cls.model.id == id))
-            instance = instance.scalar()
-            if not instance:
-                raise HTTPException(
-                    detail="Instance not found",
-                    status_code=HTTP_404_NOT_FOUND
-                )
+    async def update(
+        id: int,
+        instance_update: cls.update_schema,
+        db: AsyncSession = Depends(get_session)
+    ) -> cls.model:
+        instance = await db.execute(cls.query.where(cls.model.id == id))
+        instance = instance.scalar()
+        if not instance:
+            raise HTTPException(
+                detail="Instance not found",
+                status_code=HTTP_404_NOT_FOUND
+            )
 
-            for key, value in instance_update.dict().items():
-                setattr(instance, key, value)
+        for key, value in instance_update.dict().items():
+            setattr(instance, key, value)
 
-            db.add(instance)
-            await db.commit()
-            await db.refresh(instance)
+        db.add(instance)
+        await db.commit()
+        await db.refresh(instance)
 
-            return instance
+        return instance
 
-    elif method == "partial_update":
-        @router.patch("/{id}", name=f"Partial update {name}",
-                      response_model=cls.schema)
-        async def partial_update(
-            id: int,
-            instance_update: cls.update_schema,
-            db: AsyncSession = Depends(get_session)
-        ) -> cls.model:
-            instance = await db.execute(
-                cls.query.where(cls.model.id == id))
-            instance = instance.scalar()
-            if not instance:
-                raise HTTPException(
-                    detail="Instance not found",
-                    status_code=HTTP_404_NOT_FOUND
-                )
+    async def partial_update(
+        id: int,
+        instance_update: cls.update_schema,
+        db: AsyncSession = Depends(get_session)
+    ) -> cls.model:
+        instance = await db.execute(cls.query.where(cls.model.id == id))
+        instance = instance.scalar()
+        if not instance:
+            raise HTTPException(
+                detail="Instance not found",
+                status_code=HTTP_404_NOT_FOUND
+            )
 
-            items = instance_update.dict(
-                exclude_unset=True, exclude_none=True).items()
-            for key, value in items:
-                setattr(instance, key, value)
+        items = instance_update.dict(
+            exclude_unset=True, exclude_none=True).items()
+        for key, value in items:
+            setattr(instance, key, value)
 
-            db.add(instance)
-            await db.commit()
-            await db.refresh(instance)
+        db.add(instance)
+        await db.commit()
+        await db.refresh(instance)
 
-            return instance
+        return instance
 
-    return locals().get(method)
+    return route(locals().get(method))
