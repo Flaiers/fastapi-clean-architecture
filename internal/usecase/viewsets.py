@@ -12,7 +12,7 @@ import sqlalchemy
 
 from pydantic import BaseModel
 
-from typing import Any
+from typing import Any, Tuple
 
 import enum
 
@@ -20,36 +20,42 @@ import enum
 __all__ = ["ViewSetMetaClass"]
 
 
+class BaseConfig:
+
+    include: set = {}
+    exclude: set = {}
+    filter_schema: BaseModel = BaseModel
+    update_schema: BaseModel = BaseModel
+    create_schema: BaseModel = BaseModel
+
+
 class APIMethods:
 
-    query: Any
-    model: Base
-    fields: enum.Enum
-    filter_schema: BaseModel
-    create_schema: BaseModel
-    update_schema: BaseModel
+    model: Base = Base
+    fields: enum.Enum = enum.Enum
+    filter_schema: BaseModel = BaseModel
+    create_schema: BaseModel = BaseModel
+    update_schema: BaseModel = BaseModel
 
-    def __new__(
-        cls, query, model, fields,
-        filter_schema, create_schema,
-        update_schema, *args
-    ):
-        cls = super().__new__(cls, *args)
-        cls.query = query
-        cls.model = model
-        cls.fields = fields
-        cls.filter_schema = filter_schema
-        cls.create_schema = create_schema
-        cls.update_schema = update_schema
-        return cls
+    def __init__(
+        self, query, model,
+        fields, filter_schema,
+        create_schema, update_schema
+    ) -> None:
+        self.query = query
+        self.model = model
+        self.fields = fields
+        self.filter_schema = filter_schema
+        self.create_schema = create_schema
+        self.update_schema = update_schema
 
     @classmethod
     @property
-    def _all(cls):
-        return tuple(filter(lambda k: not k.startswith("_"), dir(cls)))
+    def all(cls) -> Tuple[str]:
+        return tuple(filter(lambda k: not k.startswith(("_", "all")), cls.__dict__))  
 
-    @staticmethod
     async def list(
+        self,
         params: Params = Depends(),
         order_by: fields = fields.id,
         db: AsyncSession = Depends(get_session),
@@ -59,26 +65,26 @@ class APIMethods:
         kwargs = filter_query.dict(exclude_unset=True,
                                    exclude_none=True)
         direction = getattr(sqlalchemy, order_direction)
-        order_by = direction(getattr(model, order_by))
+        order_by = direction(getattr(self.model, order_by))
         instance_set = await db.execute(
-            query.filter_by(**kwargs).order_by(order_by))
+            self.query.filter_by(**kwargs).order_by(order_by))
 
         return paginate(instance_set.scalars().all(), params)
 
-    @staticmethod
     async def filter(
+        self,
         select_by: fields,
         filter_by: str = "",
         params: Params = Depends(),
         db: AsyncSession = Depends(get_session)
     ) -> Any:
-        if not hasattr(model, select_by):
+        if not hasattr(self.model, select_by):
             raise HTTPException(
                 detail="Field does not exist",
                 status_code=HTTP_404_NOT_FOUND
             )
 
-        field = getattr(model, select_by)
+        field = getattr(self.model, select_by)
         instance_set = await db.execute(
             select(field).filter(field.like(f"%{filter_by}%")))
 
@@ -86,12 +92,12 @@ class APIMethods:
 
         return paginate(tuple(response), params)
 
-    @staticmethod
     async def retrieve(
+        self,
         id: int,
         db: AsyncSession = Depends(get_session)
     ) -> model:
-        instance = await db.execute(query.where(model.id == id))
+        instance = await db.execute(self.query.where(self.model.id == id))
         instance = instance.scalar()
         if not instance:
             raise HTTPException(
@@ -100,22 +106,22 @@ class APIMethods:
             )
         return instance
 
-    @staticmethod
     async def create(
+        self,
         instance: create_schema,
         db: AsyncSession = Depends(get_session)
     ) -> SucessfulResponse:
-        instance = model(**instance.dict())
+        instance = self.model(**instance.dict())
         db.add(instance)
         await db.commit()
         return SucessfulResponse(HTTP_201_CREATED)
 
-    @staticmethod
     async def delete(
+        self,
         id: int,
         db: AsyncSession = Depends(get_session)
     ) -> SucessfulResponse:
-        instance = await db.get(model, id)
+        instance = await db.get(self.model, id)
         if not instance:
             raise HTTPException(
                 detail="Instance not found",
@@ -127,13 +133,13 @@ class APIMethods:
 
         return SucessfulResponse()
 
-    @staticmethod
     async def update(
+        self,
         id: int,
         instance_update: update_schema,
         db: AsyncSession = Depends(get_session)
     ) -> model:
-        instance = await db.execute(query.where(model.id == id))
+        instance = await db.execute(self.query.where(self.model.id == id))
         instance = instance.scalar()
         if not instance:
             raise HTTPException(
@@ -150,13 +156,13 @@ class APIMethods:
 
         return instance
 
-    @staticmethod
     async def partial_update(
+        self,
         id: int,
         instance_update: update_schema,
         db: AsyncSession = Depends(get_session)
     ) -> model:
-        instance = await db.execute(query.where(model.id == id))
+        instance = await db.execute(self.query.where(self.model.id == id))
         instance = instance.scalar()
         if not instance:
             raise HTTPException(
@@ -178,7 +184,7 @@ class APIMethods:
 
 class APIDecorators:
 
-    def __init__(self, name, router, schema):
+    def __init__(self, name, router, schema) -> None:
         self.name: str = name
         self.router: APIRouter = router
         self.schema: BaseModel = schema
@@ -215,37 +221,31 @@ class ViewSetMetaClass(type):
 
     def __new__(cls, *args):
         cls = super().__new__(cls, *args)
+        Config = getattr(cls, "Config", BaseConfig)
 
         if not (hasattr(cls, "model") or hasattr(cls, "schema")):
             raise AttributeError("Override model and schema")
 
-        methods = set(APIMethods._all)
-        if hasattr(cls, "Config"):
-            if hasattr(cls.Config, "exclude") and \
-                    hasattr(cls.Config, "include"):
-                raise AttributeError("Cannot be exclude and include together")
+        if Config.include and Config.exclude:
+            raise AttributeError("Cannot be exclude and include together")
 
-            if hasattr(cls.Config, "exclude"):
-                for method in cls.Config.exclude:
-                    methods.remove(method)
+        methods = set(APIMethods.all)
+        if Config.include:
+            include_methods = set()
+            for method in Config.include:
+                if method in methods:
+                    include_methods.add(method)
+            methods = include_methods
 
-            elif hasattr(cls.Config, "include"):
-                include_methods = set()
-                for method in cls.Config.include:
-                    if method in methods:
-                        include_methods.add(method)
-                methods = include_methods
+        elif Config.exclude:
+            for method in Config.exclude:
+                methods.remove(method)
 
-        for schema_type in ("create_schema", "update_schema"):
-            schema = getattr(getattr(cls, "Config", cls),
-                             schema_type, cls.schema)
-            setattr(cls, schema_type, schema)
-
-        filter_model = getattr(cls, "filter_model", BaseModel)
+        for schema_type in ("filter_schema", "create_schema", "update_schema"):
+            setattr(cls, schema_type, getattr(Config, schema_type, cls.schema))
 
         setattr(cls, "query", getattr(cls, "query", select(cls.model)))
         setattr(cls, "router", getattr(cls, "router", APIRouter()))
-        setattr(cls, "filter_model", filter_model)
         setattr(cls, "fields", object)
         cls.fields = enum.Enum(
             cls.model.__name__,
@@ -274,7 +274,7 @@ def method_generator(cls, method):
             params: Params = Depends(),
             order_by: cls.fields = cls.fields.id,
             db: AsyncSession = Depends(get_session),
-            filter_query: cls.filter_model = Depends(),
+            filter_query: cls.filter_schema = Depends(),
             order_direction: OrderDirection = OrderDirection.asc
         ) -> Any:
             kwargs = filter_query.dict(exclude_unset=True,
