@@ -12,7 +12,9 @@ import sqlalchemy
 
 from pydantic import BaseModel
 
-from typing import Any, Tuple
+from inspect import isfunction
+
+from typing import Any, List
 
 import enum
 
@@ -51,8 +53,9 @@ class APIMethods:
 
     @classmethod
     @property
-    def all(cls) -> Tuple[str]:
-        return tuple(filter(lambda k: not k.startswith(("_", "all")), cls.__dict__))  
+    def all(cls) -> List[str]:
+        return [k for k, v in cls.__dict__.items()
+                if not k.startswith(("_")) and isfunction(v)]
 
     async def list(
         self,
@@ -226,24 +229,25 @@ class ViewSetMetaClass(type):
         if not (hasattr(cls, "model") or hasattr(cls, "schema")):
             raise AttributeError("Override model and schema")
 
-        if Config.include and Config.exclude:
+        if hasattr(Config, "include") and hasattr(Config, "exclude"):
             raise AttributeError("Cannot be exclude and include together")
 
-        methods = set(APIMethods.all)
-        if Config.include:
+        methods = APIMethods.all[:]
+        if hasattr(Config, "include"):
             include_methods = set()
             for method in Config.include:
                 if method in methods:
                     include_methods.add(method)
             methods = include_methods
 
-        elif Config.exclude:
+        elif hasattr(Config, "exclude"):
             for method in Config.exclude:
                 methods.remove(method)
 
-        for schema_type in ("filter_schema", "create_schema", "update_schema"):
+        for schema_type in ("create_schema", "update_schema"):
             setattr(cls, schema_type, getattr(Config, schema_type, cls.schema))
 
+        setattr(cls, "filter_schema", getattr(Config, "filter_schema", BaseModel))
         setattr(cls, "query", getattr(cls, "query", select(cls.model)))
         setattr(cls, "router", getattr(cls, "router", APIRouter()))
         setattr(cls, "fields", object)
@@ -258,18 +262,14 @@ class ViewSetMetaClass(type):
 
         return cls
 
-    @classmethod
-    @property
-    def router(cls):
-        return cls.router
-
 
 def method_generator(cls, method):
     name = cls.model.__name__
+    router: APIRouter = cls.router
 
     if method == "list":
-        @cls.router.get("", name=f"Read {name}s",
-                        response_model=Page[cls.schema])
+        @router.get("", name=f"Read {name}s",
+                    response_model=Page[cls.schema])
         async def list(
             params: Params = Depends(),
             order_by: cls.fields = cls.fields.id,
@@ -287,8 +287,8 @@ def method_generator(cls, method):
             return paginate(instance_set.scalars().all(), params)
 
     elif method == "filter":
-        @cls.router.get("/filter", name=f"Filter {name}",
-                        response_model=Page)
+        @router.get("/filter", name=f"Filter {name}",
+                    response_model=Page)
         async def filter(
             select_by: cls.fields,
             filter_by: str = "",
@@ -310,8 +310,8 @@ def method_generator(cls, method):
             return paginate(tuple(response), params)
 
     elif method == "retrieve":
-        @cls.router.get("/{id}", name=f"Read {name}",
-                        response_model=cls.schema)
+        @router.get("/{id}", name=f"Read {name}",
+                    response_model=cls.schema)
         async def retrieve(
             id: int,
             db: AsyncSession = Depends(get_session)
@@ -327,8 +327,8 @@ def method_generator(cls, method):
             return instance
 
     elif method == "create":
-        @cls.router.post("", name=f"Create {name}",
-                         status_code=HTTP_201_CREATED)
+        @router.post("", name=f"Create {name}",
+                     status_code=HTTP_201_CREATED)
         async def create(
             instance: cls.create_schema,
             db: AsyncSession = Depends(get_session)
@@ -339,7 +339,7 @@ def method_generator(cls, method):
             return SucessfulResponse(HTTP_201_CREATED)
 
     elif method == "delete":
-        @cls.router.delete("/{id}", name=f"Delete {name}")
+        @router.delete("/{id}", name=f"Delete {name}")
         async def delete(
             id: int,
             db: AsyncSession = Depends(get_session)
@@ -357,8 +357,8 @@ def method_generator(cls, method):
             return SucessfulResponse()
 
     elif method == "update":
-        @cls.router.put("/{id}", name=f"Update {name}",
-                        response_model=cls.schema)
+        @router.put("/{id}", name=f"Update {name}",
+                    response_model=cls.schema)
         async def update(
             id: int,
             instance_update: cls.update_schema,
@@ -383,8 +383,8 @@ def method_generator(cls, method):
             return instance
 
     elif method == "partial_update":
-        @cls.router.patch("/{id}", name=f"Partial update {name}",
-                          response_model=cls.schema)
+        @router.patch("/{id}", name=f"Partial update {name}",
+                      response_model=cls.schema)
         async def partial_update(
             id: int,
             instance_update: cls.update_schema,
