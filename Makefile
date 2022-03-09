@@ -9,13 +9,18 @@ VENV=. .venv/bin/activate
 help: ## Display this help screen
 	@awk 'BEGIN {FS = ":.*##"; printf "Usage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) }' $(MAKEFILE_LIST)
 
+init: ## Init project
+	@python -m venv .venv && $(VENV) && \
+	pip install -r requirements.txt && pip install -U pip
+.PHONY: init
+
 run: ## Run applications
 	@make -j 2 run-admin run-backend
 .PHONY: run
 
 run-admin: ## Run admin
-	@$(VENV) && uvicorn --reload --host $(HOST) --port $(ADMIN_PORT) \
-	--workers $(WORKERS) --log-level $(LEVEL) --app-dir cmd/admin main:app
+	@$(VENV) && gunicorn --reload --bind $(HOST):$(ADMIN_PORT) \
+	--workers $(WORKERS) --log-level $(LEVEL) --chdir cmd/admin main:app
 .PHONY: run-admin
 
 run-backend: ## Run backend
