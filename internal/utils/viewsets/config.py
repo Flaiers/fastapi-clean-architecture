@@ -8,6 +8,6 @@ class BaseConfig:
 
     include: set = set()
     exclude: set = set()
-    filter_schema: BaseModel = BaseModel()
-    update_schema: BaseModel = BaseModel()
-    create_schema: BaseModel = BaseModel()
+    filter_schema: BaseModel = BaseModel
+    update_schema: BaseModel = BaseModel
+    create_schema: BaseModel = BaseModel

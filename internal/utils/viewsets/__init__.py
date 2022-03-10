@@ -18,9 +18,9 @@ class ViewSetMetaClass(type):
 
     def __new__(cls, *args):
         cls = super().__new__(cls, *args)
-        Config = getattr(cls, "Config", BaseConfig)
-        include = getattr(Config, "include", set())
-        exclude = getattr(Config, "exclude", set())
+        config = getattr(cls, "Config", BaseConfig)
+        include = getattr(config, "include", set())
+        exclude = getattr(config, "exclude", set())
 
         if not (hasattr(cls, "model") or hasattr(cls, "schema")):
             raise AttributeError("Override model and schema")
@@ -42,9 +42,9 @@ class ViewSetMetaClass(type):
             all_methods.remove(exclude_method)
 
         for schema_type in ("create_schema", "update_schema"):
-            setattr(cls, schema_type, getattr(Config, schema_type, cls.schema))
+            setattr(cls, schema_type, getattr(config, schema_type, cls.schema))
 
-        setattr(cls, "filter_schema", getattr(Config, "filter_schema", BaseModel()))
+        setattr(cls, "filter_schema", getattr(config, "filter_schema", BaseModel))
         setattr(cls, "query", getattr(cls, "query", select(cls.model)))
         setattr(cls, "router", getattr(cls, "router", APIRouter()))
         setattr(cls, "fields", object)

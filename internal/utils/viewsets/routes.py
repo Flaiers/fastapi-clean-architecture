@@ -5,8 +5,6 @@ from fastapi_pagination import Page
 from fastapi import APIRouter
 from starlette.status import *
 
-from pydantic import BaseModel
-
 from inspect import isfunction
 
 from typing import List
@@ -17,10 +15,10 @@ __all__ = ["APIRoutes"]
 
 class APIRoutes:
 
-    def __init__(self, name, router, schema) -> None:
-        self.name: str = name
+    def __init__(self, name, schema, router) -> None:
+        self.name = name
+        self.schema = schema
         self.router: APIRouter = router
-        self.schema: BaseModel = schema
 
         self.delete_responses = Response.get_response(HTTP_200_OK)
         self.create_responses = Response.get_response(HTTP_201_CREATED)

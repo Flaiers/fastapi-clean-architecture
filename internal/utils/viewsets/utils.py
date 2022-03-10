@@ -19,7 +19,7 @@ __all__ = ["method_generator"]
 
 def method_generator(cls, method):
     name = cls.model.__name__
-    routes = APIRoutes(name, cls.router, cls.schema)
+    routes = APIRoutes(name, cls.schema, cls.router)
     route = getattr(routes, method)
 
     async def list(
@@ -30,7 +30,7 @@ def method_generator(cls, method):
         order_direction: OrderDirection = OrderDirection.asc
     ) -> Any:
         kwargs = filter_query.dict(exclude_unset=True,
-                                exclude_none=True)
+                                   exclude_none=True)
         direction = getattr(sqlalchemy, order_direction)
         order_by = direction(getattr(cls.model, order_by))
         instance_set = await db.execute(
