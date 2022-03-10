@@ -1,6 +1,6 @@
 from fastapi.middleware.cors import CORSMiddleware
 
-from ..controller.router import api_router
+from ..controller.http.router import api_router
 from ..usecase.applications import FastAPI
 from ..usecase.events import startup_event
 from ..usecase.exceptions import (

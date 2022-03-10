@@ -1,4 +1,4 @@
-from internal.usecase.responses import SucessfulResponse
+from internal.usecase.responses import SucessfulResponse as Response
 from internal.dto.application import BaseApplication
 from internal.entity.application import Application
 from internal.app.database import get_session
@@ -10,16 +10,7 @@ from starlette.status import *
 
 
 router = APIRouter()
-responses = {
-    HTTP_201_CREATED: {
-        "description": "Successful Response",
-        "content": {
-            "application/json": {
-                "example": {"sucessful": True},
-            }
-        }
-    }
-}
+responses = Response.get_response(HTTP_201_CREATED)
 
 
 @router.post("", name=f"Create {Application.__name__}",             
@@ -28,8 +19,8 @@ responses = {
 async def create(
     instance: BaseApplication,
     db: AsyncSession = Depends(get_session)
-) -> SucessfulResponse:
+) -> Response:
     instance = Application(**instance.dict())
     db.add(instance)
     await db.commit()
-    return SucessfulResponse(status_code=HTTP_201_CREATED)
+    return Response(status_code=HTTP_201_CREATED)
