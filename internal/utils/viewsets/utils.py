@@ -1,5 +1,5 @@
-from internal.usecase.responses import SucessfulResponse as Response
-from internal.usecase.enums import OrderDirection
+from internal.utils.responses import SucessfulResponse as Response
+from internal.utils.enums import OrderDirection
 from internal.app.database import get_session
 from .routes import APIRoutes
 

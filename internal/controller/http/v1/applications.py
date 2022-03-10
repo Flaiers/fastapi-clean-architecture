@@ -1,4 +1,4 @@
-from internal.usecase.responses import SucessfulResponse as Response
+from internal.utils.responses import SucessfulResponse as Response
 from internal.dto.application import BaseApplication
 from internal.entity.application import Application
 from internal.app.database import get_session

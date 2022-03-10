@@ -1,4 +1,4 @@
-from internal.usecase.responses import SucessfulResponse as Response
+from internal.utils.responses import SucessfulResponse as Response
 
 from fastapi.types import DecoratedCallable
 from fastapi_pagination import Page
