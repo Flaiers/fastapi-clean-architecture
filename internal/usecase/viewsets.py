@@ -26,9 +26,9 @@ class BaseConfig:
 
     include: set = set()
     exclude: set = set()
-    filter_schema: BaseModel = BaseModel
-    update_schema: BaseModel = BaseModel
-    create_schema: BaseModel = BaseModel
+    filter_schema: BaseModel = BaseModel()
+    update_schema: BaseModel = BaseModel()
+    create_schema: BaseModel = BaseModel()
 
 
 class APIRoutes:
@@ -117,12 +117,12 @@ class ViewSetMetaClass(type):
         for exclude_method in exclude:
             if exclude_method not in all_methods:
                 raise ValueError(f"{exclude_method=} does not exist")
-            methods.remove(exclude_method)
+            all_methods.remove(exclude_method)
 
         for schema_type in ("create_schema", "update_schema"):
             setattr(cls, schema_type, getattr(Config, schema_type, cls.schema))
 
-        setattr(cls, "filter_schema", getattr(Config, "filter_schema", BaseModel))
+        setattr(cls, "filter_schema", getattr(Config, "filter_schema", BaseModel()))
         setattr(cls, "query", getattr(cls, "query", select(cls.model)))
         setattr(cls, "router", getattr(cls, "router", APIRouter()))
         setattr(cls, "fields", object)
