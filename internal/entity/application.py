@@ -1,4 +1,4 @@
-from internal.app.database import Base
+from internal.config.database import Base
 
 import sqlalchemy as sa
 

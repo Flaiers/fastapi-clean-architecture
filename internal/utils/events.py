@@ -1,4 +1,4 @@
-from internal.app.database import init_db
+from internal.config.database import init_db
 
 
 __all__ = ["startup_event"]

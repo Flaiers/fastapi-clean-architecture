@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session, scoped_session, sessionmaker
 from sqlalchemy import create_engine
 import sqlalchemy as sa
 
-from .config import settings
+from . import settings
 
 
 async_engine = create_async_engine(
