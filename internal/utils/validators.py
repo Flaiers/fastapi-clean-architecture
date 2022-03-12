@@ -1,4 +1,4 @@
-import errors
+from . import errors  # noqa
 
 
 __all__ = ["validate_phone"]

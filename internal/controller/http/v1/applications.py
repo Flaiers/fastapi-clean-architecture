@@ -1,9 +1,7 @@
 from internal.utils.responses import SucessfulResponse as Response
+from internal.service.application import ApplicationService
 from internal.dto.application import BaseApplication
 from internal.entity.application import Application
-from internal.app.database import get_session
-
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from fastapi import Depends, APIRouter
 from starlette.status import *
@@ -17,10 +15,8 @@ responses = Response.get_response(HTTP_201_CREATED)
              status_code=HTTP_201_CREATED,
              responses=responses)
 async def create(
-    instance: BaseApplication,
-    db: AsyncSession = Depends(get_session)
+    schema: BaseApplication,
+    applicationService: ApplicationService = Depends()
 ) -> Response:
-    instance = Application(**instance.dict())
-    db.add(instance)
-    await db.commit()
+    await applicationService.create(schema)
     return Response(status_code=HTTP_201_CREATED)
