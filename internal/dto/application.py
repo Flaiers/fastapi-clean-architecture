@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field, validator
 
-from internal.usecase import errors
+from internal.utils.validators import validate_phone
 
 
 __all__ = ["BaseApplication", "ApplicationRead"]
@@ -14,10 +14,7 @@ class BaseApplication(BaseModel):
 
     @validator("phone")
     def validate_phone(cls, v: str):
-        if not v.startswith(("+7", "8")) or \
-               len(v.replace("+", "")) != 11:
-            raise errors.PhoneError()
-        return v
+        return validate_phone(v)
 
 
 class ApplicationRead(BaseApplication):
