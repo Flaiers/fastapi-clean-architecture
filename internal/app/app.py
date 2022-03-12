@@ -1,11 +1,10 @@
 from fastapi.middleware.cors import CORSMiddleware
 
 from ..controller.http.router import api_router
-from ..utils.applications import FastAPI
-from ..utils.events import startup_event
-from ..utils.exceptions import (
+from ..config.events import startup_event
+from ..usecase.utils import (
     validation_exception_handler,
-    ValidationException
+    ValidationException, FastAPI
 )
 from ..config import settings
 

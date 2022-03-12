@@ -1,4 +1,4 @@
-from internal.utils.responses import SucessfulResponse as Response
+from internal.usecase.utils import SucessfulResponse as Response
 from internal.service.application import ApplicationService
 from internal.dto.application import BaseApplication
 from internal.entity.application import Application

@@ -1,7 +1,7 @@
-from internal.utils.responses import SucessfulResponse as Response
-from internal.utils.enums import OrderDirection
-from internal.app.database import get_session
+from ..responses import SucessfulResponse as Response
+from ..enums import OrderDirection
 from .routes import APIRoutes
+from internal.config.database import get_session
 
 from fastapi_pagination import paginate, Params
 from fastapi import Depends, HTTPException
