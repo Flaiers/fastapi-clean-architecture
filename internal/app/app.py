@@ -7,7 +7,7 @@ from ..utils.exceptions import (
     validation_exception_handler,
     ValidationException
 )
-from .config import settings
+from ..config import settings
 
 
 app = FastAPI(

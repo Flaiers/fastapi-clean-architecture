@@ -1,6 +1,6 @@
 from internal.dto.application import BaseApplication
 from internal.entity.application import Application
-from internal.app.database import get_session
+from internal.config.database import get_session
 
 from sqlalchemy.ext.asyncio import AsyncSession
 

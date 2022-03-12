@@ -3,8 +3,8 @@ from flask_admin import Admin
 from flask import Flask
 
 from ..entity.application import Application
-from .database import current_session
-from .config import settings
+from ..config.database import current_session
+from ..config import settings
 
 
 app = Flask(__name__)
