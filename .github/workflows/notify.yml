@@ -18,8 +18,8 @@ jobs:
     steps:
       - name: Workflow dispatch event
         env:
-          PARENT_REPO: ${{ secrets.PARENT_REPO }}
           PARENT_ID: ${{ secrets.PARENT_ID }}
+          PARENT_REPOSITORY: ${{ secrets.PARENT_REPOSITORY }}
         run: |
           data="{\"ref\":\"${GITHUB_REF_NAME}\"}"
           curl \
@@ -27,4 +27,4 @@ jobs:
             -d "$data" \
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: token ${{ secrets.TOKEN }}" \
-            $GITHUB_API_URL/repos/$PARENT_REPO/actions/workflows/$PARENT_ID/dispatches
+            $GITHUB_API_URL/repos/$GITHUB_REPOSITORY_OWNER/$PARENT_REPOSITORY/actions/workflows/$PARENT_ID/dispatches
