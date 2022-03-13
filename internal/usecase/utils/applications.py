@@ -4,7 +4,7 @@ from fastapi import FastAPI as StandartFastAPI
 from typing import Callable, Any
 
 
-__all__ = ["FastAPI"]
+__all__ = "FastAPI"
 
 
 class FastAPI(StandartFastAPI):
