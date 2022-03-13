@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr, Field, validator
 
-from internal.utils.validators import validate_phone
+from internal.usecase.utils import validate_phone
 
 
 __all__ = ["BaseApplication", "ApplicationRead"]

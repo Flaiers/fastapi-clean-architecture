@@ -1,6 +1,6 @@
-from internal.app.database import Base
-
 import sqlalchemy as sa
+
+from . import Base
 
 
 __all__ = ["Application"]

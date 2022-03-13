@@ -1,4 +1,4 @@
-from internal.utils.responses import SucessfulResponse as Response
+from internal.usecase.utils import SucessfulResponse as Response
 from internal.service.application import ApplicationService
 from internal.dto.application import BaseApplication
 from internal.entity.application import Application
@@ -15,8 +15,8 @@ responses = Response.get_response(HTTP_201_CREATED)
              status_code=HTTP_201_CREATED,
              responses=responses)
 async def create(
-    schema: BaseApplication,
+    dto: BaseApplication,
     applicationService: ApplicationService = Depends()
 ) -> Response:
-    await applicationService.create(schema)
+    await applicationService.create(dto)
     return Response(status_code=HTTP_201_CREATED)
