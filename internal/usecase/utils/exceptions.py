@@ -23,7 +23,7 @@ class ValidationException(Exception):
 
 
 async def validation_exception_handler(
-    request: Request, exc: ValidationException
+    _: Request, exc: ValidationException
 ) -> JSONResponse:
     response = JSONResponse(
         {"detail": exc.detail}, status_code=exc.status_code

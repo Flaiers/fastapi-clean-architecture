@@ -13,15 +13,16 @@ __all__ = ["BaseRepository"]
 
 class BaseRepository:
 
+    model: Base = Base
+
     def __init__(
-        self,
-        session: AsyncSession = Depends(get_session)
+        self, session: AsyncSession = Depends(get_session)
     ) -> None:
         self.session = session
 
-    def create(self, dto: BaseModel) -> Base:
-        return self.model(**dto.dict())
+    def create(self, dto: BaseModel, **kwargs) -> model:
+        return self.model(**dto.dict(**kwargs))
 
-    async def save(self, instance: Base) -> None:
+    async def save(self, instance: model) -> None:
         self.session.add(instance)
         return await self.session.commit()
