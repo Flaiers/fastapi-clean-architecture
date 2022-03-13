@@ -15,8 +15,8 @@ responses = Response.get_response(HTTP_201_CREATED)
              status_code=HTTP_201_CREATED,
              responses=responses)
 async def create(
-    schema: BaseApplication,
+    dto: BaseApplication,
     applicationService: ApplicationService = Depends()
 ) -> Response:
-    await applicationService.create(schema)
+    await applicationService.create(dto)
     return Response(status_code=HTTP_201_CREATED)

@@ -1,7 +1,7 @@
 from ..responses import SucessfulResponse as Response
 from ..enums import OrderDirection
+from ..mocks import get_session
 from .routes import APIRoutes
-from internal.config.database import get_session
 
 from fastapi_pagination import paginate, Params
 from fastapi import Depends, HTTPException

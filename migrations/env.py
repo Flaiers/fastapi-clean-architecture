@@ -1,6 +1,6 @@
 from __future__ import with_statement
 
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import MetaData, engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 from logging.config import fileConfig
@@ -30,10 +30,7 @@ fileConfig(config.config_file_name)
 # target_metadata = mymodel.Base.metadata
 # target_metadata = None
 
-from internal.app.config import settings  # noqa
-from internal.app.database import Base  # noqa
-
-target_metadata = Base.metadata
+target_metadata = MetaData
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -42,6 +39,7 @@ target_metadata = Base.metadata
 
 
 def get_url():
+    from internal.config import settings
     return settings.SQLALCHEMY_DATABASE_URI
 
 

@@ -1,2 +1,2 @@
-from .admin import app as admin_app  # noqa
-from .app import app as backend_app  # noqa
+from .admin import create_app as admin_app
+from .app import create_app as backend_app
