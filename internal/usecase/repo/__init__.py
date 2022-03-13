@@ -1,6 +1,7 @@
-from internal.config.database import get_session, Base
-
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from internal.entity import Base
+from ..utils import get_session
 
 from pydantic import BaseModel
 
@@ -12,15 +13,13 @@ __all__ = ["BaseRepository"]
 
 class BaseRepository:
 
-    model: Base = Base
-
     def __init__(
         self,
         session: AsyncSession = Depends(get_session)
     ) -> None:
         self.session = session
 
-    def create(self, dto: BaseModel) -> model:
+    def create(self, dto: BaseModel) -> Base:
         return self.model(**dto.dict())
 
     async def save(self, instance: Base) -> None:
