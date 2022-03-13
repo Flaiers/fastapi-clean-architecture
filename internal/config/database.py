@@ -43,3 +43,6 @@ async def get_session() -> AsyncSession:
     )
     async with async_session() as session:
         yield session
+
+
+override_session = AsyncSession, get_session

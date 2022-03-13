@@ -1,6 +1,7 @@
 from fastapi.middleware.cors import CORSMiddleware
 
 from ..controller.http.router import api_router
+from ..config.database import override_session
 from ..config.events import startup_event
 from ..usecase.utils import (
     validation_exception_handler,
@@ -32,4 +33,5 @@ app.include_router(api_router, prefix=settings.API)
 app.add_event_handler(settings.STARTUP, startup_event)
 app.add_exception_handler(ValidationException,
                           validation_exception_handler)
+app.override_dependency(*override_session)
 app.add_pagination()

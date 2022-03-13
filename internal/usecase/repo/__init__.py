@@ -1,4 +1,4 @@
-from internal.config.database import get_session, Base
+from internal.config.database import Base
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,7 +16,7 @@ class BaseRepository:
 
     def __init__(
         self,
-        session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends()
     ) -> None:
         self.session = session
 
