@@ -1,11 +1,7 @@
-from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
-
-from typing import List, Union, Dict, Any
-
 import os
+from typing import Any, Dict, List, Union
 
-
-__all__ = ["settings"]
+from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
 
 class Settings(BaseSettings):
@@ -22,7 +18,9 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
+    def assemble_cors_origins(
+        cls, v: Union[str, List[str]]  # noqa: N805
+    ) -> Union[List[str], str]:
         if isinstance(v, str) and not v.startswith("["):
             return [i.strip() for i in v.split(",")]
         elif isinstance(v, (list, str)):
@@ -37,25 +35,28 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: PostgresDsn | None = None
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: str | None, values: Dict[str, Any]) -> str:
+    def assemble_db_connection(
+        cls, v: str | None, variables: Dict[str, Any]  # noqa: N805
+    ) -> str:
         if isinstance(v, str):
             return v
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
-            user=values.get("DB_USER"),
-            password=values.get("DB_PASSWORD"),
-            host=values.get("DB_HOST"),
-            port=values.get("DB_PORT"),
-            path=f"/{values.get('DB_NAME') or ''}",
+            user=variables.get("DB_USER"),
+            password=variables.get("DB_PASSWORD"),
+            host=variables.get("DB_HOST"),
+            port=variables.get("DB_PORT"),
+            path="{0}".format(variables.get("DB_NAME"))
         )
 
-    class Config:
+    class Config(object):
         case_sensitive = True
-        env_file = "env/"
-        if os.getenv("LEVEL") == "debug":
-            env_file += "example.env"
+        env_file = "env/{0}"
+
+        if os.getenv("LEVEL") == "debug":  # noqa: WPS604
+            env_file.format("example.env")
         else:
-            env_file += ".env"
+            env_file.format(".env")
 
 
 settings = Settings()

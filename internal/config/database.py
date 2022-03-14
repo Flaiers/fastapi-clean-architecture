@@ -1,12 +1,10 @@
+from sqlalchemy import MetaData, create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
-from sqlalchemy import MetaData, create_engine
 
 from internal.usecase.utils import get_session
+
 from . import settings
-
-
-__all__ = ["init_db", "current_session", "override_session"]
 
 
 async def init_db(url):
@@ -25,7 +23,7 @@ def async_session(url):
         engine, class_=AsyncSession, expire_on_commit=False
     )
 
-    async def get_session() -> AsyncSession:
+    async def get_session() -> AsyncSession:  # noqa: WPS430, WPS442
         async with session_factory() as session:
             yield session
 

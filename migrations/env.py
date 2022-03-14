@@ -1,20 +1,16 @@
-from __future__ import with_statement
+import asyncio
+import sys
+from logging.config import fileConfig
+from pathlib import Path
 
+from alembic import context
 from sqlalchemy import MetaData, engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from logging.config import fileConfig
-
-from alembic import context
-
-from pathlib import Path
-
-import asyncio
-import sys
-
-
 BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.append(str(BASE_DIR))
+
+from internal.config import settings  # noqa: E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -26,20 +22,11 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
-# target_metadata = None
 
 target_metadata = MetaData
 
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
-
 
 def get_url():
-    from internal.config import settings
     return settings.SQLALCHEMY_DATABASE_URI
 
 
@@ -58,8 +45,9 @@ def run_migrations_offline():
     url = get_url()
     context.configure(
         url=url,
+        compare_type=True,
+        literal_binds=True,
         target_metadata=target_metadata,
-        literal_binds=True, compare_type=True,
         dialect_opts={"paramstyle": "named"}
     )
 
@@ -87,7 +75,7 @@ async def run_migrations_online():
         )
     )
 
-    def sync_run_migrations(connection):
+    def sync_run_migrations(connection):  # noqa: WPS430
         context.configure(
             connection=connection,
             target_metadata=target_metadata,
