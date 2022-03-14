@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from . import v1  # noqa
+from . import v1
 
 
 api_router = APIRouter()

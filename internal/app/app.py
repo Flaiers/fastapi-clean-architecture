@@ -5,8 +5,8 @@ from ..config.database import override_session
 from ..config.events import startup_event
 from ..config import settings
 from ..usecase.utils import (
-    validation_exception_handler,
-    ValidationException, FastAPI
+    validation_error_handler,
+    ValidationError, FastAPI
 )
 
 
@@ -17,7 +17,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.PROJECT_NAME,
         description=settings.DESCRIPTION,
-        openapi_url=f"{settings.API}/openapi.json"
+        openapi_url="{0}/openapi.json".format(settings.API)
     )
 
     if settings.BACKEND_CORS_ORIGINS:
@@ -25,8 +25,7 @@ def create_app() -> FastAPI:
             CORSMiddleware,
             allow_origins=[
                 str(origin)
-                for origin
-                in settings.BACKEND_CORS_ORIGINS
+                for origin in settings.BACKEND_CORS_ORIGINS
             ],
             allow_credentials=True,
             allow_methods=["*"],
@@ -35,8 +34,7 @@ def create_app() -> FastAPI:
 
     app.include_router(api_router, prefix=settings.API)
     app.add_event_handler(settings.STARTUP, startup_event)
-    app.add_exception_handler(ValidationException,
-                              validation_exception_handler)
+    app.add_exception_handler(ValidationError, validation_error_handler)
     app.override_dependency(*override_session)
     app.add_pagination()
 

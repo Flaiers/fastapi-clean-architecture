@@ -25,7 +25,7 @@ def async_session(url):
         engine, class_=AsyncSession, expire_on_commit=False
     )
 
-    async def get_session() -> AsyncSession:
+    async def get_session() -> AsyncSession:  # noqa: WPS442
         async with session_factory() as session:
             yield session
 

@@ -6,10 +6,10 @@ from sqlalchemy.exc import DBAPIError
 from typing import Any, Dict
 
 
-__all__ = ["ValidationException", "validation_exception_handler"]
+__all__ = ["ValidationError", "validation_error_handler"]
 
 
-class ValidationException(Exception):
+class ValidationError(Exception):
 
     def __init__(
         self,
@@ -22,8 +22,8 @@ class ValidationException(Exception):
         self.headers = headers
 
 
-async def validation_exception_handler(
-    _: Request, exc: ValidationException
+async def validation_error_handler(
+    _: Request, exc: ValidationError
 ) -> JSONResponse:
     response = JSONResponse(
         {"detail": exc.detail}, status_code=exc.status_code
