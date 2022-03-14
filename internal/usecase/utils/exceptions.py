@@ -1,15 +1,11 @@
-from fastapi.responses import JSONResponse
-from fastapi import Request
-
-from sqlalchemy.exc import DBAPIError
-
 from typing import Any, Dict
 
+from fastapi import Request
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import DBAPIError
 
-__all__ = ["ValidationException", "validation_exception_handler"]
 
-
-class ValidationException(Exception):
+class ValidationError(Exception):
 
     def __init__(
         self,
@@ -22,8 +18,8 @@ class ValidationException(Exception):
         self.headers = headers
 
 
-async def validation_exception_handler(
-    _: Request, exc: ValidationException
+async def validation_error_handler(
+    _: Request, exc: ValidationError
 ) -> JSONResponse:
     response = JSONResponse(
         {"detail": exc.detail}, status_code=exc.status_code

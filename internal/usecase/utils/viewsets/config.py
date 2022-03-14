@@ -1,10 +1,7 @@
 from pydantic import BaseModel
 
 
-__all__ = ["BaseConfig"]
-
-
-class BaseConfig:
+class BaseConfig(object):
 
     include: set = set()
     exclude: set = set()

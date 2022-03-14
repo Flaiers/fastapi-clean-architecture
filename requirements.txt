@@ -12,6 +12,9 @@ starlette
 pydantic
 pydantic[email,dotenv]
 
+# Linter
+wemake-python-styleguide
+
 # DB
 alembic
 

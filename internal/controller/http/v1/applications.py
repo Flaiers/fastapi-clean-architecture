@@ -1,22 +1,24 @@
-from internal.usecase.utils import SucessfulResponse as Response
-from internal.service.application import ApplicationService
+from fastapi import APIRouter, Depends, status
+
 from internal.dto.application import BaseApplication
 from internal.entity.application import Application
-
-from fastapi import Depends, APIRouter
-from starlette.status import *
-
+from internal.service.application import ApplicationService
+from internal.usecase.utils import SucessfulResponse as Response
 
 router = APIRouter()
-responses = Response.get_response(HTTP_201_CREATED)
+name = "Create {0}".format(Application.__name__)
+responses = Response.get_response(status.HTTP_201_CREATED)
 
 
-@router.post("", name=f"Create {Application.__name__}",             
-             status_code=HTTP_201_CREATED,
-             responses=responses)
+@router.post(
+    path="",
+    name=name,
+    responses=responses,
+    status_code=status.HTTP_201_CREATED
+)
 async def create(
     dto: BaseApplication,
-    applicationService: ApplicationService = Depends()
+    application_service: ApplicationService = Depends()
 ) -> Response:
-    await applicationService.create(dto)
-    return Response(status_code=HTTP_201_CREATED)
+    await application_service.create(dto)
+    return Response(status_code=status.HTTP_201_CREATED)

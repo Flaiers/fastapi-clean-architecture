@@ -1,25 +1,20 @@
-from starlette.responses import JSONResponse
-from starlette.status import *
-
-
-__all__ = ["SucessfulResponse"]
+from fastapi import status
+from fastapi.responses import JSONResponse
 
 
 class SucessfulResponse(JSONResponse):
 
     def __init__(
-        self,
-        status_code=HTTP_200_OK,
-        *args, **kwargs
+        self, status_code=None, *args, **kwargs
     ) -> None:
-        kwargs |= dict(
-            status_code=status_code,
-            content={"sucessful": True}
-        )
+        kwargs |= {
+            "content": {"sucessful": True},
+            "status_code": status_code or status.HTTP_200_OK
+        }
         super().__init__(*args, **kwargs)
 
-    @staticmethod
-    def get_response(status):
+    @classmethod
+    def get_response(cls, status_code):
         response = {
             "description": "Successful Response",
             "content": {
@@ -28,4 +23,4 @@ class SucessfulResponse(JSONResponse):
                 }
             }
         }
-        return {status: response}
+        return {status_code: response}

@@ -1,23 +1,18 @@
-from .utils import method_generator
-from .config import BaseConfig
-from .routes import APIRoutes
-
-from pydantic import BaseModel
-
-from fastapi import APIRouter
-
-from sqlalchemy import select
-
 from enum import Enum
 
+from fastapi import APIRouter
+from pydantic import BaseModel
+from sqlalchemy import select
 
-__all__ = ["ViewSetMetaClass"]
+from .builder import build_method
+from .config import BaseConfig
+from .routes import APIRoutes
 
 
 class ViewSetMetaClass(type):
 
-    def __new__(cls, *args):
-        cls = super().__new__(cls, *args)
+    def __new__(mcs, *args, **kwargs):  # noqa: N804
+        cls = super().__new__(mcs, *args, **kwargs)  # noqa: WPS117
         config = getattr(cls, "Config", BaseConfig)
         include = getattr(config, "include", set())
         exclude = getattr(config, "exclude", set())
@@ -28,17 +23,21 @@ class ViewSetMetaClass(type):
         if include and exclude:
             raise AttributeError("Cannot be exclude and include together")
 
-        methods = list()
+        methods = []
         all_methods = APIRoutes.all[:]
 
         for include_method in include:
             if include_method not in all_methods:
-                raise ValueError(f"{include_method=} does not exist")
+                raise ValueError(
+                    f"{include_method=} does not exist"  # noqa: WPS305
+                )
             methods.append(include_method)
 
         for exclude_method in exclude:
             if exclude_method not in all_methods:
-                raise ValueError(f"{exclude_method=} does not exist")
+                raise ValueError(
+                    f"{exclude_method=} does not exist"  # noqa: WPS305
+                )
             all_methods.remove(exclude_method)
 
         for schema_type in ("create_schema", "update_schema"):
@@ -58,6 +57,6 @@ class ViewSetMetaClass(type):
             methods = all_methods
 
         for method in methods:
-            setattr(cls, method, method_generator(cls, method))
+            setattr(cls, method, build_method(cls, method))
 
         return cls
