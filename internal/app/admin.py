@@ -1,11 +1,10 @@
-from flask_admin.contrib.sqla import ModelView
-from flask_admin import Admin
 from flask import Flask
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 
-from ..entity.application import Application
-from ..config.database import current_session
 from ..config import settings
-
+from ..config.database import current_session
+from ..entity.application import Application
 
 __all__ = "create_app"
 

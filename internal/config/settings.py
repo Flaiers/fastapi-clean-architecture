@@ -1,9 +1,7 @@
-from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
-
-from typing import List, Union, Dict, Any
-
 import os
+from typing import Any, Dict, List, Union
 
+from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
 __all__ = ["settings"]
 

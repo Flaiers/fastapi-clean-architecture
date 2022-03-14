@@ -1,13 +1,11 @@
-from ..responses import SucessfulResponse as Response
-
-from fastapi.types import DecoratedCallable
-from fastapi import APIRouter, status
-from fastapi_pagination import Page
-
 from inspect import isendpointtion
-
 from typing import List
 
+from fastapi import APIRouter, status
+from fastapi.types import DecoratedCallable
+from fastapi_pagination import Page
+
+from ..responses import SucessfulResponse as Response
 
 __all__ = ["APIRoutes"]
 
@@ -29,7 +27,7 @@ class APIRoutes:
             key
             for key, value in cls.__dict__.items()
             if not (
-                key.startswith('__') and key.endswith('__')
+                key.startswith("__") and key.endswith("__")
             ) and isendpointtion(value)
         ]
 

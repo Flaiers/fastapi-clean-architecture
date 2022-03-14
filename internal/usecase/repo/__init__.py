@@ -1,12 +1,10 @@
+from fastapi import Depends
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from internal.entity import Base
+
 from ..utils import get_session
-
-from pydantic import BaseModel
-
-from fastapi import Depends
-
 
 __all__ = ["BaseRepository"]
 

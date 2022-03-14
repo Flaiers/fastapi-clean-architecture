@@ -1,15 +1,12 @@
+from enum import Enum
+
+from fastapi import APIRouter
+from pydantic import BaseModel
+from sqlalchemy import select
+
 from .builder import build_method
 from .config import BaseConfig
 from .routes import APIRoutes
-
-from pydantic import BaseModel
-
-from fastapi import APIRouter
-
-from sqlalchemy import select
-
-from enum import Enum
-
 
 __all__ = ["ViewSetMetaClass"]
 

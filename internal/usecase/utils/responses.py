@@ -1,6 +1,5 @@
-from fastapi.responses import JSONResponse
 from fastapi import status
-
+from fastapi.responses import JSONResponse
 
 __all__ = ["SucessfulResponse"]
 

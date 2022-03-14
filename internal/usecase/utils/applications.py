@@ -1,8 +1,7 @@
-from fastapi_pagination.api import add_pagination
+from typing import Any, Callable
+
 from fastapi import FastAPI as MainFastAPI
-
-from typing import Callable, Any
-
+from fastapi_pagination.api import add_pagination
 
 __all__ = "FastAPI"
 

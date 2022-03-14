@@ -2,7 +2,6 @@ from pydantic import BaseModel, EmailStr, validator
 
 from internal.usecase.utils import validate_phone
 
-
 __all__ = ["BaseApplication", "ApplicationRead"]
 
 

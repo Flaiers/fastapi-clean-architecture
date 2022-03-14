@@ -1,6 +1,5 @@
-from .database import init_db
 from . import settings
-
+from .database import init_db
 
 __all__ = ["startup_event"]
 

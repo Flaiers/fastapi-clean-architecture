@@ -1,10 +1,10 @@
+from sqlalchemy import MetaData, create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
-from sqlalchemy import MetaData, create_engine
 
 from internal.usecase.utils import get_session
-from . import settings
 
+from . import settings
 
 __all__ = ["init_db", "current_session", "override_session"]
 

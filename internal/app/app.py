@@ -1,14 +1,10 @@
 from fastapi.middleware.cors import CORSMiddleware
 
-from ..controller.http.router import api_router
+from ..config import settings
 from ..config.database import override_session
 from ..config.events import startup_event
-from ..config import settings
-from ..usecase.utils import (
-    validation_error_handler,
-    ValidationError, FastAPI
-)
-
+from ..controller.http.router import api_router
+from ..usecase.utils import FastAPI, ValidationError, validation_error_handler
 
 __all__ = "create_app"
 

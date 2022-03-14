@@ -1,10 +1,9 @@
-from internal.usecase.utils import SucessfulResponse as Response
-from internal.service.application import ApplicationService
+from fastapi import APIRouter, Depends, status
+
 from internal.dto.application import BaseApplication
 from internal.entity.application import Application
-
-from fastapi import Depends, APIRouter, status
-
+from internal.service.application import ApplicationService
+from internal.usecase.utils import SucessfulResponse as Response
 
 router = APIRouter()
 name = "Create {0}".format(Application.__name__)

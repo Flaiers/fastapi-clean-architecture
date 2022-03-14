@@ -1,9 +1,8 @@
-from internal.usecase.repo.application import ApplicationRepository
-from internal.dto.application import BaseApplication
-from internal.entity.application import Application
-
 from fastapi import Depends
 
+from internal.dto.application import BaseApplication
+from internal.entity.application import Application
+from internal.usecase.repo.application import ApplicationRepository
 
 __all__ = ["ApplicationService"]
 

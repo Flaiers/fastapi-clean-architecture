@@ -1,16 +1,14 @@
-from ..responses import SucessfulResponse as Response
-from ..enums import OrderDirection
-from ..mocks import get_session
-from .routes import APIRoutes
-
-from fastapi import Depends, HTTPException, status
-from fastapi_pagination import paginate, Params
-
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import sql, select
-
 from typing import Any
 
+from fastapi import Depends, HTTPException, status
+from fastapi_pagination import Params, paginate
+from sqlalchemy import select, sql
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..enums import OrderDirection
+from ..mocks import get_session
+from ..responses import SucessfulResponse as Response
+from .routes import APIRoutes
 
 __all__ = ["build_method"]
 
