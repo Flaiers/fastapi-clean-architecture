@@ -75,7 +75,7 @@ async def run_migrations_online():
         )
     )
 
-    def sync_run_migrations(connection):
+    def sync_run_migrations(connection):  # noqa: WPS430
         context.configure(
             connection=connection,
             target_metadata=target_metadata,

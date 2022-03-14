@@ -7,10 +7,8 @@ from fastapi_pagination import Page
 
 from ..responses import SucessfulResponse as Response
 
-__all__ = ["APIRoutes"]
 
-
-class APIRoutes:
+class APIRoutes(object):
 
     def __init__(self, name, schema, router) -> None:
         self.name = name

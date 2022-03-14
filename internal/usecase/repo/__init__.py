@@ -6,10 +6,8 @@ from internal.entity import Base
 
 from ..utils import get_session
 
-__all__ = ["BaseRepository"]
 
-
-class BaseRepository:
+class BaseRepository(object):
 
     model: Base = Base
 

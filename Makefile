@@ -17,6 +17,10 @@ init: ## Init project
 lint: ## Run linter
 	@$(VENV) && flake8 .
 
+.PHONY: lint-imports
+lint-imports: ## Run imports linter
+	@$(VENV) && isort .
+
 .PHONY: run
 run: ## Run applications
 	@make -j 2 run-admin run-backend

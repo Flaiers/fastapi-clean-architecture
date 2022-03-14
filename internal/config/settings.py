@@ -3,8 +3,6 @@ from typing import Any, Dict, List, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
-__all__ = ["settings"]
-
 
 class Settings(BaseSettings):
 
@@ -38,20 +36,20 @@ class Settings(BaseSettings):
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
-        cls, v: str | None, values: Dict[str, Any]  # noqa: N805
+        cls, v: str | None, variables: Dict[str, Any]  # noqa: N805
     ) -> str:
         if isinstance(v, str):
             return v
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
-            user=values.get("DB_USER"),
-            password=values.get("DB_PASSWORD"),
-            host=values.get("DB_HOST"),
-            port=values.get("DB_PORT"),
-            path="{0}".format(values.get("DB_NAME"))
+            user=variables.get("DB_USER"),
+            password=variables.get("DB_PASSWORD"),
+            host=variables.get("DB_HOST"),
+            port=variables.get("DB_PORT"),
+            path="{0}".format(variables.get("DB_NAME"))
         )
 
-    class Config:
+    class Config(object):
         case_sensitive = True
         env_file = "env/{0}"
 

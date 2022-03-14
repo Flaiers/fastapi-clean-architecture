@@ -2,8 +2,6 @@ from pydantic import BaseModel, EmailStr, validator
 
 from internal.usecase.utils import validate_phone
 
-__all__ = ["BaseApplication", "ApplicationRead"]
-
 
 class BaseApplication(BaseModel):
 
@@ -20,5 +18,5 @@ class ApplicationRead(BaseApplication):
 
     id: int
 
-    class Config:
+    class Config(object):
         orm_mode = True

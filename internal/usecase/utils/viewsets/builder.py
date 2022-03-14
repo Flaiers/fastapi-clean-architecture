@@ -10,8 +10,6 @@ from ..mocks import get_session
 from ..responses import SucessfulResponse as Response
 from .routes import APIRoutes
 
-__all__ = ["build_method"]
-
 
 def build_method(args, method):
     name = args.model.__name__

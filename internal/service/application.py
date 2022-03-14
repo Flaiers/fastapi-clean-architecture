@@ -4,10 +4,8 @@ from internal.dto.application import BaseApplication
 from internal.entity.application import Application
 from internal.usecase.repo.application import ApplicationRepository
 
-__all__ = ["ApplicationService"]
 
-
-class ApplicationService:
+class ApplicationService(object):
 
     def __init__(
         self,

@@ -1,7 +1,5 @@
 from . import errors
 
-__all__ = ["validate_phone"]
-
 
 def validate_phone(v: str):
     if not v.startswith(("+7", "8")):

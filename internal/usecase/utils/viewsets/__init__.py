@@ -8,8 +8,6 @@ from .builder import build_method
 from .config import BaseConfig
 from .routes import APIRoutes
 
-__all__ = ["ViewSetMetaClass"]
-
 
 class ViewSetMetaClass(type):
 

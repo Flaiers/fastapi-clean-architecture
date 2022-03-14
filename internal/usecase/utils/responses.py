@@ -1,8 +1,6 @@
 from fastapi import status
 from fastapi.responses import JSONResponse
 
-__all__ = ["SucessfulResponse"]
-
 
 class SucessfulResponse(JSONResponse):
 

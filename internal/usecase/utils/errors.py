@@ -1,7 +1,5 @@
 from pydantic.errors import PydanticValueError
 
-__all__ = ["PhoneError"]
-
 
 class PhoneError(PydanticValueError):
 

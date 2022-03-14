@@ -2,8 +2,6 @@ import sqlalchemy as sa
 
 from . import Base
 
-__all__ = ["Application"]
-
 
 class Application(Base):
 

@@ -3,8 +3,6 @@ from typing import Any, Callable
 from fastapi import FastAPI as MainFastAPI
 from fastapi_pagination.api import add_pagination
 
-__all__ = "FastAPI"
-
 
 class FastAPI(MainFastAPI):
 

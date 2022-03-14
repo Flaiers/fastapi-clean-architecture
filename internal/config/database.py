@@ -6,8 +6,6 @@ from internal.usecase.utils import get_session
 
 from . import settings
 
-__all__ = ["init_db", "current_session", "override_session"]
-
 
 async def init_db(url):
     engine = create_async_engine(
@@ -25,7 +23,7 @@ def async_session(url):
         engine, class_=AsyncSession, expire_on_commit=False
     )
 
-    async def get_session() -> AsyncSession:  # noqa: WPS442
+    async def get_session() -> AsyncSession:  # noqa: WPS430, WPS442
         async with session_factory() as session:
             yield session
 

@@ -6,8 +6,6 @@ from ..config import settings
 from ..config.database import current_session
 from ..entity.application import Application
 
-__all__ = "create_app"
-
 
 def create_app() -> Flask:
     app = Flask(__name__)
