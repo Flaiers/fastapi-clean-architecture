@@ -43,7 +43,7 @@ class ViewSetMetaClass(type):
         for schema_type in ("create_schema", "update_schema"):
             setattr(cls, schema_type, getattr(config, schema_type, cls.schema))
 
-        setattr(cls, "filter_schema", getattr(config, "filter_schema", BaseModel))
+        setattr(cls, "filter_schema", getattr(config, "filter_schema", BaseModel))  # noqa: E501
         setattr(cls, "query", getattr(cls, "query", select(cls.model)))
         setattr(cls, "router", getattr(cls, "router", APIRouter()))
         setattr(cls, "fields", object)
