@@ -2,10 +2,10 @@ from fastapi import Depends
 
 from internal.dto.application import BaseApplication
 from internal.entity.application import Application
-from internal.usecase.repo import InjectRepository
+from internal.usecase.repository import Repository
 
 
-@InjectRepository(Application)
+@Repository(Application)
 class ApplicationRepository(object):
     ...  # noqa: WPS604
 

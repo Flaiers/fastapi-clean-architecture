@@ -12,7 +12,8 @@ help: ## Display this help screen
 .PHONY: init
 init: ## Init project
 	python -m venv .venv && $(VENV) && \
-	pip install -r requirements.txt && pip install -U pip
+	pip install -r requirements.txt && pip install -U pip && \
+	pre-commit install
 
 .PHONY: lint
 lint: ## Run linter
