@@ -13,6 +13,7 @@ pydantic
 pydantic[email,dotenv]
 
 # Linter
+pre-commit
 wemake-python-styleguide
 
 # DB
