@@ -4,13 +4,14 @@ from logging.config import fileConfig
 from pathlib import Path
 
 from alembic import context
-from sqlalchemy import MetaData, engine_from_config, pool
+from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.append(str(BASE_DIR))
 
 from internal.config import settings  # noqa: E402
+from internal.entity import Base  # noqa: E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -23,7 +24,7 @@ fileConfig(config.config_file_name)
 # add your model's MetaData object here
 # for 'autogenerate' support
 
-target_metadata = MetaData
+target_metadata = Base.metadata
 
 
 def get_url():
@@ -55,6 +56,17 @@ def run_migrations_offline():
         context.run_migrations()
 
 
+def sync_run_migrations(connection):
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        compare_type=True
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
 async def run_migrations_online():
     """Run migrations in 'online' mode.
 
@@ -74,17 +86,6 @@ async def run_migrations_online():
             future=True,
         )
     )
-
-    def sync_run_migrations(connection):  # noqa: WPS430
-        context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            compare_type=True
-        )
-
-        with context.begin_transaction():
-            context.run_migrations()
-
     async with connectable.connect() as connection:
         await connection.run_sync(sync_run_migrations)
 

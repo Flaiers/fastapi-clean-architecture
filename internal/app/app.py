@@ -1,10 +1,10 @@
 from fastapi.middleware.cors import CORSMiddleware
 
-from ..config import settings
-from ..config.database import override_session
-from ..config.events import startup_event
-from ..controller.http.router import api_router
-from ..usecase.utils import (
+from internal.config import settings
+from internal.config.database import override_session
+from internal.config.events import startup_event
+from internal.controller.http.router import api_router
+from internal.usecase.utils import (
     FastAPI,
     ValidationError,
     validation_error_handler,

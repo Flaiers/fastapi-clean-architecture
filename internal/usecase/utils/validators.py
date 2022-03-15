@@ -1,4 +1,4 @@
-from . import errors
+from internal.usecase.utils import errors
 
 
 def validate_phone(v: str):

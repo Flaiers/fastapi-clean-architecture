@@ -6,5 +6,4 @@ sys.path.append(str(BASE_DIR))
 
 from internal.app import admin_app  # noqa: E402
 
-if __name__ == "__main__":
-    app = admin_app()
+app = admin_app()

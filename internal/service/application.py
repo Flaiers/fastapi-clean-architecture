@@ -2,14 +2,19 @@ from fastapi import Depends
 
 from internal.dto.application import BaseApplication
 from internal.entity.application import Application
-from internal.usecase.repo.application import ApplicationRepository
+from internal.usecase.repo import InjectRepository
+
+
+@InjectRepository(Application)
+class ApplicationRepository(object):
+    ...  # noqa: WPS604
 
 
 class ApplicationService(object):
 
     def __init__(
         self,
-        application_repository: ApplicationRepository = Depends()
+        application_repository: ApplicationRepository = Depends(),
     ) -> None:
         self.application_repository = application_repository
 
