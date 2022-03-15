@@ -3,8 +3,7 @@ from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from internal.entity import Base
-
-from ..utils import get_session
+from internal.usecase.utils import get_session
 
 
 class BaseRepository(object):

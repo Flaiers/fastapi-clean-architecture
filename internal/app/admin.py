@@ -2,9 +2,9 @@ from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-from ..config import settings
-from ..config.database import current_session
-from ..entity.application import Application
+from internal.config import settings
+from internal.config.database import current_session
+from internal.entity.application import Application
 
 
 def create_app() -> Flask:

@@ -2,9 +2,8 @@ from sqlalchemy import MetaData, create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
 
+from internal.config import settings
 from internal.usecase.utils import get_session
-
-from . import settings
 
 
 async def init_db(url):

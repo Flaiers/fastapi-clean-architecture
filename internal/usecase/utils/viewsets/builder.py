@@ -5,10 +5,11 @@ from fastapi_pagination import Params, paginate
 from sqlalchemy import select, sql
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..enums import OrderDirection
-from ..mocks import get_session
-from ..responses import SucessfulResponse as Response
-from .routes import APIRoutes
+from internal.usecase.utils import OrderDirection
+from internal.usecase.utils import SucessfulResponse as Response
+from internal.usecase.utils import get_session
+
+from .routes import APIRoutes  # noqa: WPS300
 
 
 def build_method(args, method):

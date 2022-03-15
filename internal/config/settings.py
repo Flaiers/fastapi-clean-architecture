@@ -4,12 +4,12 @@ from typing import Any, Dict, List, Union
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
 
-def get_env_file(env_dir):
+def get_env_file(env_dir: str):
     if os.getenv("LEVEL") == "debug":
-        env_dir.format("example.env")
+        env_file = env_dir.format("example.env")
     else:
-        env_dir.format(".env")
-    return env_dir
+        env_file = env_dir.format(".env")
+    return env_file
 
 
 class Settings(BaseSettings):
@@ -44,17 +44,17 @@ class Settings(BaseSettings):
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
-        cls, v: str | None, variables: Dict[str, Any]  # noqa: N805
+        cls, v: str | None, values: Dict[str, Any]  # noqa: N805
     ) -> str:
         if isinstance(v, str):
             return v
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
-            user=variables.get("DB_USER"),
-            password=variables.get("DB_PASSWORD"),
-            host=variables.get("DB_HOST"),
-            port=variables.get("DB_PORT"),
-            path="{0}".format(variables.get("DB_NAME"))
+            user=values.get("DB_USER"),
+            password=values.get("DB_PASSWORD"),
+            host=values.get("DB_HOST"),
+            port=values.get("DB_PORT"),
+            path=values.get("DB_NAME"),
         )
 
     class Config(object):

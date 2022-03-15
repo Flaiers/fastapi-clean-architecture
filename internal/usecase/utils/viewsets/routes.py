@@ -5,7 +5,7 @@ from fastapi import APIRouter, status
 from fastapi.types import DecoratedCallable
 from fastapi_pagination import Page
 
-from ..responses import SucessfulResponse as Response
+from internal.usecase.utils import SucessfulResponse as Response
 
 
 class APIRoutes(object):

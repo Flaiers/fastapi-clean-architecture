@@ -1,5 +1,5 @@
-from . import settings
-from .database import init_db
+from internal.config import settings
+from internal.config.database import init_db
 
 
 async def startup_event():

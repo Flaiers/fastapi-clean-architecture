@@ -5,9 +5,7 @@ from internal.entity.application import Application
 from internal.usecase.repo import InjectRepository
 from internal.usecase.utils import get_application_repository
 
-override_repository = (
-    get_application_repository, InjectRepository(Application)
-)
+override_repository = get_application_repository, InjectRepository(Application)
 
 
 class ApplicationService(object):
