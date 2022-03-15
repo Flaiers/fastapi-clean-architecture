@@ -1,7 +1,5 @@
 import sqlalchemy as sa
 
-from internal.usecase.utils import consts
-
 from . import Base
 
 
@@ -12,6 +10,6 @@ class Application(Base):
         sa.UniqueConstraint("email"),
     )
 
-    phone = sa.Column(sa.String(consts.default_length), index=True)
-    email = sa.Column(sa.String(consts.default_length), index=True)
+    phone = sa.Column(sa.String(255), index=True)
+    email = sa.Column(sa.String(255), index=True)
     text = sa.Column(sa.Text)

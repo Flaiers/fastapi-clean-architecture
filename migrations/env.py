@@ -55,6 +55,17 @@ def run_migrations_offline():
         context.run_migrations()
 
 
+def sync_run_migrations(connection):
+    context.configure(
+        connection=connection,
+        target_metadata=target_metadata,
+        compare_type=True
+    )
+
+    with context.begin_transaction():
+        context.run_migrations()
+
+
 async def run_migrations_online():
     """Run migrations in 'online' mode.
 
@@ -74,17 +85,6 @@ async def run_migrations_online():
             future=True,
         )
     )
-
-    def sync_run_migrations(connection):  # noqa: WPS430
-        context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            compare_type=True
-        )
-
-        with context.begin_transaction():
-            context.run_migrations()
-
     async with connectable.connect() as connection:
         await connection.run_sync(sync_run_migrations)
 

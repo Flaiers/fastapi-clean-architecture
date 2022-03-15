@@ -4,6 +4,14 @@ from typing import Any, Dict, List, Union
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
 
+def get_env_file(env_dir):
+    if os.getenv("LEVEL") == "debug":
+        env_dir.format("example.env")
+    else:
+        env_dir.format(".env")
+    return env_dir
+
+
 class Settings(BaseSettings):
 
     API: str = "/api"
@@ -51,12 +59,7 @@ class Settings(BaseSettings):
 
     class Config(object):
         case_sensitive = True
-        env_file = "env/{0}"
-
-        if os.getenv("LEVEL") == "debug":  # noqa: WPS604
-            env_file.format("example.env")
-        else:
-            env_file.format(".env")
+        env_file = get_env_file("env/{0}")
 
 
 settings = Settings()

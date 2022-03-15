@@ -1,7 +1,7 @@
 import enum
 
 
-class OrderDirection(str, enum.Enum):  # noqa: WPS600
+class OrderDirection(str, enum.Enum):
 
     asc = "asc"
     desc = "desc"

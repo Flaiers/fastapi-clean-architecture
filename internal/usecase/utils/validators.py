@@ -1,9 +1,9 @@
-from . import consts, errors
+from . import errors
 
 
 def validate_phone(v: str):
     if not v.startswith(("+7", "8")):
         raise errors.PhoneError()
-    if len(v.replace("+", "")) != consts.phone_length:
+    if len(v.replace("+", "")) != 11:
         raise errors.PhoneError()
     return v
