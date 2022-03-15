@@ -1,4 +1,4 @@
-from inspect import isendpointtion
+from inspect import isfunction
 from typing import List
 
 from fastapi import APIRouter, status
@@ -26,7 +26,7 @@ class APIRoutes(object):
             for key, value in cls.__dict__.items()
             if not (
                 key.startswith("__") and key.endswith("__")
-            ) and isendpointtion(value)
+            ) and isfunction(value)
         ]
 
     def list(self, endpoint: DecoratedCallable) -> DecoratedCallable:

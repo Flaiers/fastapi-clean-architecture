@@ -6,5 +6,4 @@ sys.path.append(str(BASE_DIR))
 
 from internal.app import backend_app  # noqa: E402
 
-if __name__ == "__main__":
-    app = backend_app()
+app = backend_app()

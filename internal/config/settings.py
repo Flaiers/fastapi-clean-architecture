@@ -4,12 +4,10 @@ from typing import Any, Dict, List, Union
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
 
-def get_env_file(env_dir: str):
+def get_env_file(env_file: str):
     if os.getenv("LEVEL") == "debug":
-        env_file = env_dir.format("example.env")
-    else:
-        env_file = env_dir.format(".env")
-    return env_file
+        return env_file.format("example.env")
+    return env_file.format(".env")
 
 
 class Settings(BaseSettings):
@@ -54,7 +52,7 @@ class Settings(BaseSettings):
             password=values.get("DB_PASSWORD"),
             host=values.get("DB_HOST"),
             port=values.get("DB_PORT"),
-            path=values.get("DB_NAME"),
+            path="/{0}".format(values.get("DB_NAME")),
         )
 
     class Config(object):
