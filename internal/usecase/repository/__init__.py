@@ -25,4 +25,4 @@ class Repository(object):
 
     async def save(self, instance: model) -> None:
         self.session.add(instance)
-        return await self.session.commit()
+        await self.session.commit()
