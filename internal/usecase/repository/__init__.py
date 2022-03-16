@@ -1,12 +1,10 @@
-from .base import BaseRepository
+from typing import Any, Callable, Optional
+
+from .repository import Repository
 
 
-class InjectRepository(object):
-
-    def __init__(self, model):
-        self.model = model
-
-    def __call__(self, new_repository):
-        return type(
-            new_repository.__name__, (BaseRepository,), {"model": self.model}
-        )
+def Inject(dependency: Optional[Callable[..., Any]] = None):  # noqa: N802
+    class_name = "{0.__name__}{1.__name__}".format(dependency, Repository)
+    class_bases = (Repository,)
+    class_namespace = {"model": dependency}
+    return type(class_name, class_bases, class_namespace)

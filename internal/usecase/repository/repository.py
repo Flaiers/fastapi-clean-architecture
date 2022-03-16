@@ -6,7 +6,7 @@ from internal.entity import Base
 from internal.usecase.utils import get_session
 
 
-class BaseRepository(object):
+class Repository(object):
 
     model: Base = Base
 
