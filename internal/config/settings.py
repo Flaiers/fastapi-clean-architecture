@@ -25,13 +25,13 @@ class Settings(BaseSettings):
 
     @validator("BACKEND_CORS_ORIGINS", pre=True)
     def assemble_cors_origins(
-        cls, v: Union[str, List[str]]  # noqa: N805
+        cls, value: Union[str, List[str]]  # noqa: N805
     ) -> Union[List[str], str]:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
-            return v
-        raise ValueError(v)
+        if isinstance(value, str) and not value.startswith("["):
+            return [i.strip() for i in value.split(",")]
+        elif isinstance(value, (list, str)):
+            return value
+        raise ValueError(value)
 
     DB_HOST: str
     DB_PORT: str
@@ -42,10 +42,10 @@ class Settings(BaseSettings):
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(
-        cls, v: str | None, values: Dict[str, Any]  # noqa: N805
+        cls, value: str | None, values: Dict[str, Any]  # noqa: N805
     ) -> str:
-        if isinstance(v, str):
-            return v
+        if isinstance(value, str):
+            return value
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
             user=values.get("DB_USER"),

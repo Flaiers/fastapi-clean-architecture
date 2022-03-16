@@ -1,3 +1,5 @@
+from typing import Type
+
 from fastapi import Depends
 
 from internal.dto.application import BaseApplication
@@ -9,7 +11,7 @@ class ApplicationService(object):
 
     def __init__(
         self,
-        application_repository: Repository = Depends(Inject(Application)),
+        application_repository: Type[Repository] = Depends(Inject(Application)),
     ) -> None:
         self.application_repository = application_repository
 
