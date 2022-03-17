@@ -1,9 +1,9 @@
+from typing import Pattern
+
 from internal.usecase.utils import errors
 
 
-def validate_phone(value: str):
-    if not value.startswith(("+7", "8")):
-        raise errors.PhoneError()
-    if len(value.replace("+", "")) != 11:
-        raise errors.PhoneError()
-    return value
+def validate_phone(phone: str, regex: Pattern[str]) -> str:
+    if not regex.match(phone):
+        raise errors.PhoneError(phone=phone)
+    return phone
