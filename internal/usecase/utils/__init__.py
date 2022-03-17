@@ -1,4 +1,5 @@
 from .applications import FastAPI
+from .datatypes import PhoneStr
 from .enums import OrderDirection
 from .errors import PhoneError
 from .exceptions import ValidationError, validation_error_handler

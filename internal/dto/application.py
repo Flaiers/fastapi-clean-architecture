@@ -1,17 +1,13 @@
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr
 
-from internal.usecase.utils import validate_phone
+from internal.usecase.utils import PhoneStr
 
 
 class BaseApplication(BaseModel):
 
+    phone: PhoneStr
     email: EmailStr
-    phone: str
     text: str
-
-    @validator("phone")
-    def validate_phone(cls, v: str):  # noqa: N805
-        return validate_phone(v)
 
 
 class ApplicationRead(BaseApplication):

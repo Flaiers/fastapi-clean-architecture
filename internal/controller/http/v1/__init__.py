@@ -5,6 +5,6 @@ from . import applications
 router = APIRouter()
 router.include_router(
     applications.router,
-    prefix="/applications",
-    tags=["applications"]
+    prefix='/applications',
+    tags=['applications']
 )

@@ -15,7 +15,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.PROJECT_NAME,
         description=settings.DESCRIPTION,
-        openapi_url="{0}/openapi.json".format(settings.API)
+        openapi_url='{0}/openapi.json'.format(settings.API)
     )
 
     if settings.BACKEND_CORS_ORIGINS:
@@ -26,8 +26,8 @@ def create_app() -> FastAPI:
                 for origin in settings.BACKEND_CORS_ORIGINS
             ],
             allow_credentials=True,
-            allow_methods=["*"],
-            allow_headers=["*"],
+            allow_methods=['*'],
+            allow_headers=['*'],
         )
 
     app.include_router(api_router, prefix=settings.API)

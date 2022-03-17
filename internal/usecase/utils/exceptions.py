@@ -13,7 +13,7 @@ class ValidationError(Exception):
         status_code: int = 400,
         headers: Dict[str, Any] | None = None,
     ) -> None:
-        self.detail = str(error.orig).split("DETAIL:  ")[-1]
+        self.detail = str(error.orig).split('DETAIL:  ')[-1]
         self.status_code = status_code
         self.headers = headers
 
@@ -22,7 +22,7 @@ async def validation_error_handler(
     _: Request, exc: ValidationError
 ) -> JSONResponse:
     response = JSONResponse(
-        {"detail": exc.detail}, status_code=exc.status_code
+        {'detail': exc.detail}, status_code=exc.status_code
     )
     if exc.headers is not None:
         response.init_headers(exc.headers)

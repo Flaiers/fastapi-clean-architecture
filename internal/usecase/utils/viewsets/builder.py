@@ -37,19 +37,19 @@ def build_method(args, method):
 
     async def filter(
         select_by: args.fields,
-        filter_by: str = "",
+        filter_by: str = '',
         params: Params = Depends(),
         db: AsyncSession = Depends(get_session)
     ) -> Any:
         if not hasattr(args.model, select_by):
             raise HTTPException(
-                detail="Field does not exist",
+                detail='Field does not exist',
                 status_code=status.HTTP_404_NOT_FOUND
             )
 
         field = getattr(args.model, select_by)
         instance_set = await db.execute(
-            select(field).filter(field.like("%{0}%".format(filter_by)))
+            select(field).filter(field.like('%{0}%'.format(filter_by)))
         )
         response = set(instance_set.scalars().all())
 
@@ -63,7 +63,7 @@ def build_method(args, method):
         instance = instance.scalar()
         if not instance:
             raise HTTPException(
-                detail="Instance not found",
+                detail='Instance not found',
                 status_code=status.HTTP_404_NOT_FOUND
             )
         return instance
@@ -84,7 +84,7 @@ def build_method(args, method):
         instance = await db.get(args.model, id)
         if not instance:
             raise HTTPException(
-                detail="Instance not found",
+                detail='Instance not found',
                 status_code=status.HTTP_404_NOT_FOUND
             )
 
@@ -102,7 +102,7 @@ def build_method(args, method):
         instance = instance.scalar()
         if not instance:
             raise HTTPException(
-                detail="Instance not found",
+                detail='Instance not found',
                 status_code=status.HTTP_404_NOT_FOUND
             )
 
@@ -124,7 +124,7 @@ def build_method(args, method):
         instance = instance.scalar()
         if not instance:
             raise HTTPException(
-                detail="Instance not found",
+                detail='Instance not found',
                 status_code=status.HTTP_404_NOT_FOUND
             )
 
