@@ -32,7 +32,7 @@ def async_session(url):
 
 def sync_session(url) -> Session:
     engine = create_engine(
-        url.replace("+asyncpg", ""), pool_pre_ping=True, future=True
+        url.replace('+asyncpg', ''), pool_pre_ping=True, future=True
     )
     session_factory = sessionmaker(
         engine, autoflush=False, expire_on_commit=False

@@ -25,77 +25,77 @@ class APIRoutes(object):
             key
             for key, value in cls.__dict__.items()
             if not (
-                key.startswith("__") and key.endswith("__")
+                key.startswith('__') and key.endswith('__')
             ) and isfunction(value)
         ]
 
     def list(self, endpoint: DecoratedCallable) -> DecoratedCallable:
         self.router.add_api_route(
-            path="",
-            methods=["GET"],
+            path='',
+            methods=['GET'],
             endpoint=endpoint,
             response_model=Page[self.schema],
-            name="Read {0}s".format(self.name)
+            name='Read {0}s'.format(self.name)
         )
         return endpoint
 
     def filter(self, endpoint: DecoratedCallable) -> DecoratedCallable:
         self.router.add_api_route(
-            path="/filter",
-            methods=["GET"],
+            path='/filter',
+            methods=['GET'],
             endpoint=endpoint,
             response_model=Page,
-            name="Filter {0}".format(self.name)
+            name='Filter {0}'.format(self.name)
         )
         return endpoint
 
     def retrieve(self, endpoint: DecoratedCallable) -> DecoratedCallable:
         self.router.add_api_route(
-            path="/{id}",
-            methods=["GET"],
+            path='/{id}',
+            methods=['GET'],
             endpoint=endpoint,
             response_model=self.schema,
-            name="Read {0}".format(self.name)
+            name='Read {0}'.format(self.name)
         )
         return endpoint
 
     def create(self, endpoint: DecoratedCallable) -> DecoratedCallable:
         self.router.add_api_route(
-            path="",
-            methods=["POST"],
+            path='',
+            methods=['POST'],
             endpoint=endpoint,
             responses=self.create_responses,
             status_code=status.HTTP_201_CREATED,
-            name="Create {0}".format(self.name)
+            name='Create {0}'.format(self.name)
         )
         return endpoint
 
     def delete(self, endpoint: DecoratedCallable) -> DecoratedCallable:
         self.router.add_api_route(
-            path="/{id}",
-            methods=["DELETE"],
+            path='/{id}',
+            methods=['DELETE'],
             endpoint=endpoint,
             responses=self.delete_responses,
-            name="Delete {0}".format(self.name)
+            name='Delete {0}'.format(self.name)
         )
         return endpoint
 
     def update(self, endpoint: DecoratedCallable) -> DecoratedCallable:
         self.router.add_api_route(
-            path="/{id}",
-            methods=["PUT"],
+            path='/{id}',
+            methods=['PUT'],
             endpoint=endpoint,
             response_model=self.schema,
-            name="Update {0}".format(self.name)
+            name='Update {0}'.format(self.name)
         )
         return endpoint
 
     def partial_update(self, endpoint: DecoratedCallable) -> DecoratedCallable:
         self.router.add_api_route(
-            path="/{id}",
-            methods=["PATCH"],
+            path='/{id}',
+            methods=['PATCH'],
             endpoint=endpoint,
             response_model=self.schema,
-            name="Partial update {0}".format(self.name)
+            name='Partial update {0}'.format(self.name)
         )
         return endpoint

@@ -11,6 +11,6 @@ class Base(object):
 
     @declared_attr
     def __tablename__(cls) -> str:  # noqa: N805
-        return "{0}s".format(cls.__name__.lower())
+        return '{0}s'.format(cls.__name__.lower())
 
     id = sa.Column(sa.Integer, primary_key=True, index=True)

@@ -6,8 +6,8 @@ from internal.entity import Base
 class Application(Base):
 
     __table_args__ = (
-        sa.UniqueConstraint("phone"),
-        sa.UniqueConstraint("email"),
+        sa.UniqueConstraint('phone'),
+        sa.UniqueConstraint('email'),
     )
 
     phone = sa.Column(sa.String(255), index=True)

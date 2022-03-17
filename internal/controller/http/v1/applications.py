@@ -10,10 +10,10 @@ responses = Response.get_response(status.HTTP_201_CREATED)
 
 
 @router.post(
-    path="",
+    path='',
     responses=responses,
     status_code=status.HTTP_201_CREATED,
-    name="Create {0}".format(Application.__name__)
+    name='Create {0}'.format(Application.__name__)
 )
 async def create(
     dto: BaseApplication,
