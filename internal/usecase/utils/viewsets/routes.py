@@ -22,11 +22,11 @@ class APIRoutes(object):
     @property
     def all(cls) -> List[str]:
         return [
-            key
-            for key, value in cls.__dict__.items()
+            name
+            for name, class_object in cls.__dict__.items()
             if not (
-                key.startswith('__') and key.endswith('__')
-            ) and isfunction(value)
+                name.startswith('__') and name.endswith('__')
+            ) and isfunction(class_object)
         ]
 
     def list(self, endpoint: DecoratedCallable) -> DecoratedCallable:

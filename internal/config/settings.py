@@ -25,7 +25,7 @@ class Settings(BaseSettings):
 
     @validator('BACKEND_CORS_ORIGINS', pre=True)
     def assemble_cors_origins(
-        cls, value: Union[str, List[str]]  # noqa: N805
+        cls, value: Union[str, List[str]]  # noqa: N805, WPS110
     ) -> Union[List[str], str]:
         if isinstance(value, str) and not value.startswith('['):
             return [i.strip() for i in value.split(',')]
@@ -42,7 +42,7 @@ class Settings(BaseSettings):
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(
-        cls, value: str | None, values: Dict[str, Any]  # noqa: N805
+        cls, value: str | None, values: Dict[str, Any]  # noqa: N805, WPS110
     ) -> str:
         if isinstance(value, str):
             return value

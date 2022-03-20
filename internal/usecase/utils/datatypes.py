@@ -37,5 +37,5 @@ class PhoneStr(str):
         )
 
     @classmethod
-    def validate(cls, value: str) -> str:
-        return validate_phone(value, cls.regex)
+    def validate(cls, phone: str) -> str:
+        return validate_phone(phone, cls.regex)
