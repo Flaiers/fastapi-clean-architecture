@@ -2,7 +2,6 @@ include env/example.env
 include env/.env
 export
 
-VENV=. .venv/bin/activate
 
 .SILENT:
 .PHONY: help
@@ -11,17 +10,15 @@ help: ## Display this help screen
 
 .PHONY: init
 init: ## Init project
-	python -m venv .venv && $(VENV) && \
-	pip install -r requirements.txt && pip install -U pip && \
-	pre-commit install
+	poetry run pre-commit install
 
 .PHONY: lint
 lint: ## Run linter
-	$(VENV) && flake8 .
+	poetry run flake8 .
 
 .PHONY: lint-imports
 lint-imports: ## Run imports linter
-	$(VENV) && isort .
+	poetry run isort .
 
 .PHONY: run
 run: ## Run applications
@@ -29,18 +26,18 @@ run: ## Run applications
 
 .PHONY: run-admin
 run-admin: ## Run admin
-	$(VENV) && gunicorn --reload --bind $(HOST):$(ADMIN_PORT) \
+	poetry run gunicorn --reload --bind $(HOST):$(ADMIN_PORT) \
 	--workers $(WORKERS) --log-level $(LEVEL) --chdir cmd/admin main:app
 
 .PHONY: run-backend
 run-backend: ## Run backend
-	$(VENV) && uvicorn --reload --host $(HOST) --port $(BACKEND_PORT) \
+	poetry run uvicorn --reload --host $(HOST) --port $(BACKEND_PORT) \
 	--workers $(WORKERS) --log-level $(LEVEL) --app-dir cmd/app main:app
 
 .PHONY: migrate-create
 migrate-create: ## Create new migration
-	$(VENV) && alembic revision --autogenerate -m $(name)
+	poetry run alembic revision --autogenerate -m $(name)
 
 .PHONY: migrate-up
 migrate-up: ## Migration up
-	$(VENV) && alembic upgrade head
+	poetry run alembic upgrade head
