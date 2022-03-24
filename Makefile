@@ -1,5 +1,10 @@
-include env/example.env
-include env/.env
+ifneq ($(wildcard env/example.env),)
+    include env/example.env
+endif
+ifneq ($(wildcard env/.env),)
+    include env/.env
+endif
+
 export
 
 
