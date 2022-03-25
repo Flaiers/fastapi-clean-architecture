@@ -31,8 +31,8 @@ def create_app() -> FastAPI:
         )
 
     app.include_router(api_router, prefix=settings.API)
-    app.add_event_handler(settings.STARTUP, startup_event)
     app.add_exception_handler(ValidationError, validation_error_handler)
+    app.add_event_handler(settings.STARTUP, startup_event(settings))
     app.override_dependency(*override_session)
     app.add_pagination()
 
