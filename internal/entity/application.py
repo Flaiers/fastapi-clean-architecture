@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 
-from internal.entity import Base
+from internal.entity.base import Base
 
 
 class Application(Base):

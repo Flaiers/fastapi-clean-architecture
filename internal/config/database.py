@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import Session, scoped_session, sessionmaker
 
 from internal.config import settings
-from internal.entity import Base
+from internal.entity.base import Base
 from internal.usecase.utils import get_session
 
 
