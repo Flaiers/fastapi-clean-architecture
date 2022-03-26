@@ -1,4 +1,4 @@
-from typing import Any, Callable, Type
+from typing import Any, Callable, ClassVar, Generic, Type, TypeVar
 
 from fastapi import Depends, params
 from pydantic import BaseModel
@@ -7,20 +7,23 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from internal.entity.base import Base
 from internal.usecase.utils import get_session
 
+Model = TypeVar('Model', bound=Base)
+Dto = TypeVar('Dto', bound=BaseModel)
 
-class Repository(object):
 
-    model: Type[Base] = Base
+class Repository(Generic[Model]):
+
+    model: ClassVar[Type[Model]]
 
     def __init__(
         self, session: AsyncSession = Depends(get_session)
     ) -> None:
         self.session = session
 
-    def create(self, dto: Type[BaseModel], **kwargs) -> model:
+    def create(self, dto: Type[Dto], **kwargs) -> Type[Model]:
         return self.model(**dto.dict(**kwargs))
 
-    async def save(self, instance: model) -> None:
+    async def save(self, instance: Type[Model]) -> None:
         self.session.add(instance)
         await self.session.commit()
 

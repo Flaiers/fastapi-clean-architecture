@@ -3,7 +3,7 @@ from typing import Any, Callable, ClassVar, Dict, Generator, Pattern
 
 from pydantic.validators import constr_length_validator, str_validator
 
-from .validators import validate_phone  # noqa: WPS300
+from ..pydantic.validators import validate_phone  # noqa: WPS300
 
 CallableGenerator = Generator[Callable[..., Any], None, None]
 
@@ -14,7 +14,7 @@ class PhoneStr(str):
     format: ClassVar[str] = 'phone'
     example: ClassVar[str] = '+78005553535'
     regex: ClassVar[Pattern[str]] = re.compile(
-        r'^(\+)[1-9][0-9\-\(\)\.]{9,15}$'
+        r'^(\+)[1-9][0-9\-().]{9,15}$'
     )
     min_length: ClassVar[int] = 9
     max_length: ClassVar[int] = 15

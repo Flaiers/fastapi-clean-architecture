@@ -36,8 +36,9 @@ run-admin: ## Run admin
 
 .PHONY: run-backend
 run-backend: ## Run backend
-	poetry run uvicorn --reload --host $(HOST) --port $(BACKEND_PORT) \
-	--workers $(WORKERS) --log-level $(LEVEL) --app-dir cmd/app main:app
+	poetry run gunicorn --reload --bind $(HOST):$(BACKEND_PORT) \
+	--worker-class uvicorn.workers.UvicornWorker \
+	--workers $(WORKERS) --log-level $(LEVEL) --chdir cmd/app main:app
 
 .PHONY: migrate-create
 migrate-create: ## Create new migration

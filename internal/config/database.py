@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import Session, scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker
 
 from internal.config import settings
 from internal.entity.base import Base
@@ -30,7 +30,7 @@ def async_session(url):
     return get_session
 
 
-def sync_session(url) -> Session:
+def sync_session(url):
     engine = create_engine(
         url.replace('+asyncpg', ''), pool_pre_ping=True, future=True
     )

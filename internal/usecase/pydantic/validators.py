@@ -1,6 +1,6 @@
 from typing import Pattern
 
-from internal.usecase.utils import errors
+from internal.usecase.pydantic import errors
 
 
 def validate_phone(phone: str, regex: Pattern[str]) -> str:
