@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 
-from internal.usecase.utils import PhoneStr
+from internal.usecase.pydantic import PhoneStr
 
 
 class BaseApplication(BaseModel):
