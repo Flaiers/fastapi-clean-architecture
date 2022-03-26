@@ -20,6 +20,7 @@ jobs:
         env:
           PARENT_ID: ${{ secrets.PARENT_ID }}
           PARENT_REPOSITORY: ${{ secrets.PARENT_REPOSITORY }}
+          GITHUB_REPOSITORY_OWNER: ${{ secrets.GITHUB_REPOSITORY_OWNER }}
         run: |
           data="{\"ref\":\"${GITHUB_REF_NAME}\"}"
           curl \
