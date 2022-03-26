@@ -1,13 +1,6 @@
-import os
 from typing import Any, Dict, List, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
-
-
-def get_env_file(env_file: str):
-    if os.getenv('LEVEL') == 'debug':
-        return env_file.format('example.env')
-    return env_file.format('.env')
 
 
 class Settings(BaseSettings):
@@ -57,7 +50,6 @@ class Settings(BaseSettings):
 
     class Config(object):
         case_sensitive = True
-        env_file = get_env_file('env/{0}')
 
 
 settings = Settings()
