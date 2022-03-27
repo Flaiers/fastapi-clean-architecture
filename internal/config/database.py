@@ -1,3 +1,5 @@
+from typing import Callable
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -7,7 +9,7 @@ from internal.entity.base import Base
 from internal.usecase.utils import get_session
 
 
-async def init_db(url):
+async def init_db(url: str) -> None:
     engine = create_async_engine(
         url, pool_pre_ping=True, future=True
     )
@@ -15,7 +17,7 @@ async def init_db(url):
         await conn.run_sync(Base.metadata.create_all)
 
 
-def async_session(url):
+def async_session(url: str) -> Callable[..., AsyncSession]:
     engine = create_async_engine(
         url, pool_pre_ping=True, future=True
     )
@@ -30,7 +32,7 @@ def async_session(url):
     return get_session
 
 
-def sync_session(url):
+def sync_session(url: str) -> scoped_session:
     engine = create_engine(
         url.replace('+asyncpg', ''), pool_pre_ping=True, future=True
     )
