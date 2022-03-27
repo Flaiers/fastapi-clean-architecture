@@ -18,8 +18,9 @@ init: ## Init project
 	poetry run pre-commit install
 
 .PHONY: lint
-lint: ## Run linter
+lint: ## Run linters
 	poetry run flake8 .
+	poetry run mypy .
 
 .PHONY: lint-imports
 lint-imports: ## Run imports linter

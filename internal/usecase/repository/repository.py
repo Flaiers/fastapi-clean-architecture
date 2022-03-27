@@ -1,4 +1,4 @@
-from typing import Any, Callable, ClassVar, Generic, Type, TypeVar
+from typing import Any, Callable, Generic, Type, TypeVar
 
 from fastapi import Depends, params
 from pydantic import BaseModel
@@ -13,7 +13,7 @@ Dto = TypeVar('Dto', bound=BaseModel)
 
 class Repository(Generic[Model]):
 
-    model: ClassVar[Type[Model]]
+    model: Type[Model]
 
     def __init__(
         self, session: AsyncSession = Depends(get_session)

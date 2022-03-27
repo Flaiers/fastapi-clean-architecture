@@ -10,8 +10,6 @@ CallableGenerator = Generator[Callable[..., Any], None, None]
 
 class PhoneStr(str):
 
-    type: ClassVar[str] = 'string'
-    format: ClassVar[str] = 'phone'
     example: ClassVar[str] = '+78005553535'
     regex: ClassVar[Pattern[str]] = re.compile(
         r'^(\+)[1-9][0-9\-().]{9,15}$'
@@ -28,8 +26,8 @@ class PhoneStr(str):
     @classmethod
     def __modify_schema__(cls, field_schema: Dict[str, Any]) -> None:
         field_schema.update(
-            type=cls.type,
-            format=cls.format,
+            type='string',
+            format='phone',
             example=cls.example,
             pattern=cls.regex.pattern,
             minLength=cls.min_length,
