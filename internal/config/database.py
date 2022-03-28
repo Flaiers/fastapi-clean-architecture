@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import AsyncGenerator, Callable
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -7,6 +7,8 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from internal.config import settings
 from internal.entity.base import Base
 from internal.usecase.utils import get_session
+
+AsyncSessionGenerator = AsyncGenerator[AsyncSession, None]
 
 
 async def init_db(url: str) -> None:
@@ -17,7 +19,7 @@ async def init_db(url: str) -> None:
         await conn.run_sync(Base.metadata.create_all)
 
 
-def async_session(url: str) -> Callable[..., AsyncSession]:
+def async_session(url: str) -> Callable[..., AsyncSessionGenerator]:
     engine = create_async_engine(
         url, pool_pre_ping=True, future=True
     )
@@ -25,7 +27,7 @@ def async_session(url: str) -> Callable[..., AsyncSession]:
         engine, class_=AsyncSession, expire_on_commit=False
     )
 
-    async def get_session() -> AsyncSession:  # noqa: WPS430, WPS442
+    async def get_session() -> AsyncSessionGenerator:  # noqa: WPS430, WPS442
         async with session_factory() as session:
             yield session
 
