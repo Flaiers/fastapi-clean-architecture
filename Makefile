@@ -19,7 +19,7 @@ init: ## Init project
 
 .PHONY: lint
 lint: ## Run linters
-	poetry run flake8 .
+	poetry run flake8
 	poetry run mypy .
 
 .PHONY: lint-imports
