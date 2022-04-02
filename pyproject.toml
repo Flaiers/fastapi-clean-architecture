@@ -5,9 +5,7 @@ description = "Clean FastAPI architecture"
 
 license = "MIT"
 
-authors = [
-    "Maxim Bigin <i@flaiers.me>"
-]
+authors = ["Maxim Bigin <i@flaiers.me>"]
 
 readme = "README.md"
 repository = "https://github.com/flaiers/fastapi-clean-architecture"
