@@ -12,11 +12,7 @@ from internal.usecase.utils import (
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(
-        title=settings.PROJECT_NAME,
-        description=settings.DESCRIPTION,
-        openapi_url='{0}/openapi.json'.format(settings.API)
-    )
+    app = FastAPI(settings=settings)
 
     if settings.BACKEND_CORS_ORIGINS:
         app.add_middleware(

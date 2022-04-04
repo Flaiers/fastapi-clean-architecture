@@ -6,6 +6,7 @@ from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 class Settings(BaseSettings):
 
     API: str = '/api'
+    DOCS: str = '/docs'
     ADMIN: str = '/admin'
     STARTUP: str = 'startup'
     SECRET_KEY: str
@@ -13,6 +14,12 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = 'FastAPI'
     DESCRIPTION: str = 'FastAPI clean architecture'
+    VERSION: str = '0.6'
+
+    SWAGGER_UI_PARAMETERS: Dict[str, Any] = {
+        'displayRequestDuration': True,
+        'filter': True,
+    }
 
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 

@@ -10,7 +10,7 @@ class Base(object):
     metadata: MetaData
 
     @declared_attr
-    def __tablename__(cls) -> str:  # noqa: N805
-        return '{0}s'.format(cls.__name__.lower())
+    def __tablename__(cls):  # noqa: N805
+        return cls.__name__.lower()
 
     id = sa.Column(sa.Integer, primary_key=True, index=True)

@@ -5,9 +5,7 @@ description = "Clean FastAPI architecture"
 
 license = "MIT"
 
-authors = [
-    "Maxim Bigin <i@flaiers.me>"
-]
+authors = ["Maxim Bigin <i@flaiers.me>"]
 
 readme = "README.md"
 repository = "https://github.com/flaiers/fastapi-clean-architecture"
@@ -36,6 +34,7 @@ psycopg2-binary = "^2.9.3"
 pre-commit = "^2.17.0"
 
 wemake-python-styleguide = "^0.16.1"
+mypy = "^0.942"
 
 
 [build-system]
