@@ -4,10 +4,14 @@
 .gitignore
 .gitattributes
 
+# EditorConfig
+.editorconfig
+
 # CI
 .codeclimate.yml
 .travis.yml
 .taskcluster.yml
+.pre-commit-config.yaml
 
 # Docker
 docker-compose.yml
