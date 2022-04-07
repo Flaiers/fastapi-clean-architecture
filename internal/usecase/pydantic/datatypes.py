@@ -8,7 +8,7 @@ from ..pydantic.validators import validate_phone  # noqa: WPS300
 CallableGenerator = Generator[Callable[..., Any], None, None]
 
 
-class PhoneStr(str):
+class PhoneStr(str):  # noqa: WPS600
 
     example: ClassVar[str] = '+78005553535'
     regex: ClassVar[Pattern[str]] = re.compile(
