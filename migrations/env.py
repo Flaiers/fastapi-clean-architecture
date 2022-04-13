@@ -49,7 +49,7 @@ def run_migrations_offline():
         compare_type=True,
         literal_binds=True,
         target_metadata=target_metadata,
-        dialect_opts={'paramstyle': 'named'}
+        dialect_opts={'paramstyle': 'named'},
     )
 
     with context.begin_transaction():
@@ -60,7 +60,7 @@ def sync_run_migrations(connection):
     context.configure(
         connection=connection,
         target_metadata=target_metadata,
-        compare_type=True
+        compare_type=True,
     )
 
     with context.begin_transaction():
@@ -75,7 +75,7 @@ async def run_migrations_online():
 
     """
     configuration = config.get_section(
-        config.config_ini_section
+        config.config_ini_section,
     )
     configuration['sqlalchemy.url'] = get_url()
     connectable = AsyncEngine(
@@ -84,7 +84,7 @@ async def run_migrations_online():
             prefix='sqlalchemy.',
             poolclass=pool.NullPool,
             future=True,
-        )
+        ),
     )
     async with connectable.connect() as connection:
         await connection.run_sync(sync_run_migrations)
