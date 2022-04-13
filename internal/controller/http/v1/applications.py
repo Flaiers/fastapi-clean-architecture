@@ -5,7 +5,7 @@ from internal.service.application import ApplicationService
 from internal.usecase.utils import SucessfulResponse as Response
 
 router = APIRouter()
-responses = Response.get_response(status.HTTP_201_CREATED)
+responses = Response.schema(status.HTTP_201_CREATED)
 
 
 @router.post(
