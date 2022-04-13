@@ -19,10 +19,11 @@ class ValidationError(Exception):
 
 
 async def validation_error_handler(
-    _: Request, exc: ValidationError
+    _: Request, exc: ValidationError,
 ) -> JSONResponse:
     response = JSONResponse(
-        {'detail': exc.detail}, status_code=exc.status_code
+        content={'detail': exc.detail},
+        status_code=exc.status_code,
     )
     if exc.headers is not None:
         response.init_headers(exc.headers)
