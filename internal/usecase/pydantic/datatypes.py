@@ -12,7 +12,7 @@ class PhoneStr(str):  # noqa: WPS600
 
     example: ClassVar[str] = '+78005553535'
     regex: ClassVar[Pattern[str]] = re.compile(
-        r'^(\+)[1-9][0-9\-().]{9,15}$'
+        r'^(\+)[1-9][0-9\-().]{9,15}$',
     )
     min_length: ClassVar[int] = 9
     max_length: ClassVar[int] = 15

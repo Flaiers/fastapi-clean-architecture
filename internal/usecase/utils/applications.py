@@ -21,7 +21,7 @@ class FastAPI(MainFastAPI):
     def override_dependency(
         self,
         dependency: Callable[..., Any],
-        factory: Callable[..., Any]
+        factory: Callable[..., Any],
     ):
         self.dependency_overrides[dependency] = factory
         return self

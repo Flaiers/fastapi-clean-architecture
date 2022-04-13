@@ -13,22 +13,25 @@ AsyncSessionGenerator = AsyncGenerator[AsyncSession, None]
 
 async def init_db(url: str) -> None:
     engine = create_async_engine(
-        url, pool_pre_ping=True, future=True
+        url, pool_pre_ping=True, future=True,
     )
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 
-def async_session(url: str) -> Callable[..., AsyncSessionGenerator]:
+def async_sessionmaker(url: str) -> AsyncSession:
     engine = create_async_engine(
-        url, pool_pre_ping=True, future=True
+        url, pool_pre_ping=True, future=True,
     )
     session_factory = sessionmaker(
-        engine, class_=AsyncSession, expire_on_commit=False
+        engine, class_=AsyncSession, expire_on_commit=False,
     )
+    return session_factory()
 
+
+def async_session(url: str) -> Callable[..., AsyncSessionGenerator]:
     async def get_session() -> AsyncSessionGenerator:  # noqa: WPS430, WPS442
-        async with session_factory() as session:
+        async with async_sessionmaker(url) as session:
             yield session
 
     return get_session
@@ -36,10 +39,10 @@ def async_session(url: str) -> Callable[..., AsyncSessionGenerator]:
 
 def sync_session(url: str) -> scoped_session:
     engine = create_engine(
-        url.replace('+asyncpg', ''), pool_pre_ping=True, future=True
+        url.replace('+asyncpg', ''), pool_pre_ping=True, future=True,
     )
     session_factory = sessionmaker(
-        engine, autoflush=False, expire_on_commit=False
+        engine, autoflush=False, expire_on_commit=False,
     )
     return scoped_session(session_factory)
 

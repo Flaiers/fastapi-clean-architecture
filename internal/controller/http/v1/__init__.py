@@ -6,5 +6,5 @@ router = APIRouter()
 router.include_router(
     applications.router,
     prefix='/applications',
-    tags=['applications']
+    tags=['applications'],
 )

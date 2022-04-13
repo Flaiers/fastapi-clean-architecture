@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 
 from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
 
@@ -25,8 +25,8 @@ class Settings(BaseSettings):
 
     @validator('BACKEND_CORS_ORIGINS', pre=True)
     def assemble_cors_origins(
-        cls, value: Union[str, List[str]]  # noqa: N805, WPS110
-    ) -> Union[List[str], str]:
+        cls, value: str | List[str],  # noqa: N805, WPS110
+    ) -> str | List[str]:
         if isinstance(value, str) and not value.startswith('['):
             return [i.strip() for i in value.split(',')]
         elif isinstance(value, (list, str)):
@@ -42,7 +42,7 @@ class Settings(BaseSettings):
 
     @validator('SQLALCHEMY_DATABASE_URI', pre=True)
     def assemble_db_connection(
-        cls, value: str | None, values: Dict[str, Any]  # noqa: N805, WPS110
+        cls, value: str | None, values: Dict[str, Any],  # noqa: N805, WPS110
     ) -> str:
         if isinstance(value, str):
             return value
