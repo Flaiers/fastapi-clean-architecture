@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-clean-architecture"
-version = "0.8.0"
+version = "0.9.0"
 description = "Clean FastAPI architecture"
 
 license = "MIT"

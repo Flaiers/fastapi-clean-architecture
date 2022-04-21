@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = 'FastAPI'
     DESCRIPTION: str = 'FastAPI clean architecture'
-    VERSION: str = '0.8.0'
+    VERSION: str = '0.9.0'
 
     SWAGGER_UI_PARAMETERS: Dict[str, Any] = {
         'displayRequestDuration': True,
