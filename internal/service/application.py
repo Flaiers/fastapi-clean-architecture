@@ -7,10 +7,10 @@ class ApplicationService(object):
 
     def __init__(
         self,
-        application_repository: Repository[Application] = Inject(Application),
+        repository: Repository[Application] = Inject(Application),
     ) -> None:
-        self.application_repository = application_repository
+        self.repository = repository
 
     async def create(self, dto: BaseApplication) -> Application:
-        application = self.application_repository.create(**dto.dict())
-        return await self.application_repository.save(application)
+        application = self.repository.create(**dto.dict())
+        return await self.repository.save(application)
