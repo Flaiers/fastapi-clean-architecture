@@ -20,6 +20,11 @@ class Repository(Generic[Model]):
         self, session: AsyncSession = Depends(get_session),
     ) -> None:
         self.session = session
+        self.pk_fields = (
+            field.name
+            for field in self.model.__mapper__.primary_key
+            if field.server_default is not None
+        )
 
     def create(self, **fields) -> Type[Model]:
         return self.model(**fields)
@@ -31,10 +36,15 @@ class Repository(Generic[Model]):
         return await self.session.execute(statement)
 
     async def save(self, instance: Type[Model]) -> Type[Model]:
-        if instance.id is None:
-            self.session.add(instance)
-        else:
+        exist = (
+            field
+            for field in self.pk_fields
+            if getattr(instance, field) is not None
+        )
+        if tuple(exist):
             instance = await self.session.merge(instance)
+        else:
+            self.session.add(instance)
         await self.session.commit()
         return instance
 

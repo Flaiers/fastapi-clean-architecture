@@ -1,8 +1,7 @@
 from typing import AsyncGenerator, Callable
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, orm
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
 
 from internal.config import settings
 from internal.entity.base import Base
@@ -23,7 +22,7 @@ def async_sessionmaker(url: str) -> AsyncSession:
     engine = create_async_engine(
         url, pool_pre_ping=True, future=True,
     )
-    session_factory = sessionmaker(
+    session_factory = orm.sessionmaker(
         engine, class_=AsyncSession, expire_on_commit=False,
     )
     return session_factory()
@@ -37,14 +36,14 @@ def async_session(url: str) -> Callable[..., AsyncSessionGenerator]:
     return get_session
 
 
-def sync_session(url: str) -> scoped_session:
+def sync_session(url: str) -> orm.scoped_session:
     engine = create_engine(
         url.replace('+asyncpg', ''), pool_pre_ping=True, future=True,
     )
-    session_factory = sessionmaker(
+    session_factory = orm.sessionmaker(
         engine, autoflush=False, expire_on_commit=False,
     )
-    return scoped_session(session_factory)
+    return orm.scoped_session(session_factory)
 
 
 current_session = sync_session(settings.SQLALCHEMY_DATABASE_URI)
