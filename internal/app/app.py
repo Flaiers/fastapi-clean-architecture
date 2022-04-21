@@ -1,12 +1,9 @@
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.exc import DBAPIError
 
 from internal.config import database, events, settings
 from internal.controller.http.router import api_router
-from internal.usecase.utils import (
-    FastAPI,
-    ValidationError,
-    validation_error_handler,
-)
+from internal.usecase.utils import FastAPI, database_error_handler
 
 
 def create_app() -> FastAPI:
@@ -24,10 +21,10 @@ def create_app() -> FastAPI:
             allow_headers=['*'],
         )
 
-    app.include_router(api_router, prefix=settings.API)
-    app.add_event_handler(settings.STARTUP, events.startup_event(settings))
-    app.add_exception_handler(ValidationError, validation_error_handler)
-    app.override_dependency(*database.override_session)
     app.add_pagination()
+    app.override_dependency(*database.override_session)
+    app.include_router(api_router, prefix=settings.API)
+    app.add_exception_handler(DBAPIError, database_error_handler)
+    app.add_event_handler(settings.STARTUP, events.startup_event(settings))
 
     return app

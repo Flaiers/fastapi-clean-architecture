@@ -39,6 +39,9 @@ htmlcov/
 nosetests.xml
 coverage.xml
 
+# Mypy
+.mypy_cache
+
 # PyBuilder
 target/
 
