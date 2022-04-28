@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 
 from internal.dto.application import BaseApplication
 from internal.service.application import ApplicationService
-from internal.usecase.utils import SucessfulResponse as Response
+from internal.usecase.utils import SuccessfulResponse as Response
 
 router = APIRouter()
 create_response = Response.schema(status.HTTP_201_CREATED)

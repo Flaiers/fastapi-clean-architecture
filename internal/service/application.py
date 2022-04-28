@@ -1,6 +1,6 @@
 from internal.dto.application import BaseApplication
 from internal.entity.application import Application
-from internal.usecase.repository import Inject, Repository
+from package.sqlalchemy.repository import Inject, Repository
 
 
 class ApplicationService(object):

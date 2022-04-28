@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from internal.config import settings
 from internal.entity.base import Base
-from internal.usecase.utils import get_session
+from package.sqlalchemy import get_session
 
 AsyncSessionGenerator = AsyncGenerator[AsyncSession, None]
 
@@ -18,19 +18,16 @@ async def init_db(url: str) -> None:
         await conn.run_sync(Base.metadata.create_all)
 
 
-def async_sessionmaker(url: str) -> AsyncSession:
+def async_session(url: str) -> Callable[..., AsyncSessionGenerator]:
     engine = create_async_engine(
         url, pool_pre_ping=True, future=True,
     )
-    session_factory = orm.sessionmaker(
+    factory = orm.sessionmaker(
         engine, class_=AsyncSession, expire_on_commit=False,
     )
-    return session_factory()
 
-
-def async_session(url: str) -> Callable[..., AsyncSessionGenerator]:
     async def get_session() -> AsyncSessionGenerator:  # noqa: WPS430, WPS442
-        async with async_sessionmaker(url) as session:
+        async with factory() as session:
             yield session
 
     return get_session

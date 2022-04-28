@@ -37,7 +37,7 @@ class response_schema(dict):  # noqa: WPS600, N801
         return self
 
 
-class SucessfulResponse(JSONResponse):
+class SuccessfulResponse(JSONResponse):
 
     def __init__(
         self, status_code: int = status.HTTP_200_OK, **kwargs,

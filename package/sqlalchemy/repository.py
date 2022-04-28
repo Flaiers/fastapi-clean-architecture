@@ -5,10 +5,11 @@ from fastapi import Depends, params
 from sqlalchemy import orm
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.declarative import declarative_base
 
-from internal.entity.base import Base
-from internal.usecase.utils import get_session
+from package.sqlalchemy import get_session
 
+Base = declarative_base()
 Model = TypeVar('Model', bound=Base)
 
 
@@ -26,7 +27,7 @@ class Repository(Generic[Model]):
             if field.server_default is not None
         )
 
-    def create(self, **fields) -> Type[Model]:
+    def create(self, **fields) -> Model:
         return self.model(**fields)
 
     async def find(self, *options, **fields) -> Result:
@@ -35,7 +36,7 @@ class Repository(Generic[Model]):
         )
         return await self.session.execute(statement)
 
-    async def save(self, instance: Type[Model]) -> Type[Model]:
+    async def save(self, instance: Model) -> Model:
         exist = (
             field
             for field in self.pk_fields
