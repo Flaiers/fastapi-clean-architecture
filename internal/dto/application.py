@@ -1,3 +1,5 @@
+import uuid
+
 from pydantic import BaseModel, EmailStr
 
 from internal.usecase.pydantic import PhoneStr
@@ -12,7 +14,7 @@ class BaseApplication(BaseModel):
 
 class ApplicationRead(BaseApplication):
 
-    id: int
+    id: uuid.UUID
 
     class Config(object):
         orm_mode = True
