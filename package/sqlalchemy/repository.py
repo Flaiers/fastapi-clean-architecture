@@ -36,6 +36,10 @@ class Repository(Generic[Model]):
         )
         return await self.session.execute(statement)
 
+    async def delete(self, instance: Model) -> None:
+        await self.session.delete(instance)
+        await self.session.commit()
+
     async def save(self, instance: Model) -> Model:
         exist = (
             field
@@ -46,6 +50,7 @@ class Repository(Generic[Model]):
             instance = await self.session.merge(instance)
         else:
             self.session.add(instance)
+
         await self.session.commit()
         return instance
 
