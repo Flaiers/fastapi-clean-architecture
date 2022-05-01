@@ -31,6 +31,7 @@ class Settings(BaseSettings):
             return [i.strip() for i in value.split(',')]
         elif isinstance(value, (list, str)):
             return value
+
         raise ValueError(value)
 
     DB_HOST: str
@@ -46,6 +47,7 @@ class Settings(BaseSettings):
     ) -> str:
         if isinstance(value, str):
             return value
+
         return PostgresDsn.build(
             scheme='postgresql+asyncpg',
             user=values.get('DB_USER'),

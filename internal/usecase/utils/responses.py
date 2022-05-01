@@ -27,13 +27,11 @@ class response_schema(dict):  # noqa: WPS600, N801
         }
         super().__init__(self.schema(example, description, status_code))
 
-    def __call__(
-        self,
-        example: Dict[Any, Any] = {},  # noqa: B006
-        description: str = '',
-    ):
+    def __call__(self, detail: str = '', description: str = ''):
+        example = self.example.copy()
+        example['detail'] = detail or example['detail']
         return self.schema(
-            example or self.example,
+            example,
             description or self.description,
             self.status_code,
         )
@@ -45,15 +43,15 @@ class SuccessfulResponse(JSONResponse):
         self, status_code: int = status.HTTP_200_OK, **kwargs,
     ) -> None:
         kwargs |= {
-            'content': {'sucessful': True},
+            'content': {'successful': True},
             'status_code': status_code,
         }
         super().__init__(**kwargs)
 
     @classmethod
-    def schema(cls, status_code: int):
+    def schema(cls, status_code: int = status.HTTP_200_OK):
         return response_schema(
-            example={'sucessful': True},
-            description='Sucessful Response',
+            example={'successful': True},
+            description='Successful Response',
             status_code=status_code,
         )
