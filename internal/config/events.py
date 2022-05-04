@@ -1,8 +1,8 @@
 from internal.config.database import init_db
 
 
-def startup_event(settings):
+def startup_database(url: str):
     async def wrapper():
-        await init_db(settings.SQLALCHEMY_DATABASE_URI)
+        await init_db(url)
 
     return wrapper

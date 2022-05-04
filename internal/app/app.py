@@ -31,6 +31,8 @@ def create_app() -> FastAPI:
     app.include_router(api_router, prefix=settings.API)
     app.add_exception_handler(DBAPIError, database_error_handler)
     app.add_exception_handler(HTTPException, http_exception_handler)
-    app.add_event_handler(settings.STARTUP, events.startup_event(settings))
-
+    app.add_event_handler(
+        settings.STARTUP,
+        events.startup_database(settings.SQLALCHEMY_DATABASE_URI),
+    )
     return app

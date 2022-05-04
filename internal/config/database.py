@@ -37,10 +37,10 @@ def sync_session(url: str) -> orm.scoped_session:
     engine = create_engine(
         url.replace('+asyncpg', ''), pool_pre_ping=True, future=True,
     )
-    session_factory = orm.sessionmaker(
+    factory = orm.sessionmaker(
         engine, autoflush=False, expire_on_commit=False,
     )
-    return orm.scoped_session(session_factory)
+    return orm.scoped_session(factory)
 
 
 current_session = sync_session(settings.SQLALCHEMY_DATABASE_URI)

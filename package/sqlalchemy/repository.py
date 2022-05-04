@@ -30,10 +30,10 @@ class Repository(Generic[Model]):
     def create(self, **fields) -> Model:
         return self.model(**fields)
 
-    async def find(self, *options, **fields) -> Result:
-        statement = sa.select(self.model).filter_by(**fields).options(
+    async def find(self, *options, clauses: tuple = (), **fields) -> Result:
+        statement = sa.select(self.model).options(
             *(orm.joinedload(option) for option in options),
-        )
+        ).where(*clauses).filter_by(**fields)
         return await self.session.execute(statement)
 
     async def delete(self, instance: Model) -> None:
