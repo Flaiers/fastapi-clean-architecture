@@ -15,6 +15,7 @@ help: ## Display this help screen
 
 .PHONY: install
 install: ## Installations
+	poetry env use python;  \
 	poetry install; \
 	poetry run pre-commit install
 
