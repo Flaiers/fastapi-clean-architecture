@@ -17,6 +17,8 @@ async def init_db(url: str) -> None:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
+    await engine.dispose()
+
 
 def async_session(url: str) -> Callable[..., AsyncSessionGenerator]:
     engine = create_async_engine(
@@ -43,5 +45,5 @@ def sync_session(url: str) -> orm.scoped_session:
     return orm.scoped_session(factory)
 
 
-current_session = sync_session(settings.SQLALCHEMY_DATABASE_URI)
-override_session = get_session, async_session(settings.SQLALCHEMY_DATABASE_URI)
+current_session = sync_session(settings.DATABASE_URI)
+override_session = get_session, async_session(settings.DATABASE_URI)

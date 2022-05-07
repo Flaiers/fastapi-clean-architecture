@@ -39,9 +39,9 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASSWORD: str
     DB_NAME: str
-    SQLALCHEMY_DATABASE_URI: PostgresDsn | None = None
+    DATABASE_URI: PostgresDsn | None = None
 
-    @validator('SQLALCHEMY_DATABASE_URI', pre=True)
+    @validator('DATABASE_URI', pre=True)
     def assemble_db_connection(
         cls, value: str | None, values: Dict[str, Any],  # noqa: N805, WPS110
     ) -> str:
