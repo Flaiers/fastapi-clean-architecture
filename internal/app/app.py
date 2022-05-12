@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.exc import DBAPIError
 
-from internal.config import database, events, settings
+from internal.config import database, settings
 from internal.controller.http.router import api_router
 from internal.usecase.utils import (
     FastAPI,
@@ -12,7 +12,13 @@ from internal.usecase.utils import (
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(settings=settings)
+    app = FastAPI(
+        title=settings.PROJECT_NAME,
+        description=settings.DESCRIPTION,
+        version=settings.VERSION,
+        openapi_url='{0}/openapi.json'.format(settings.DOCS),
+        swagger_ui_parameters=settings.SWAGGER_UI_PARAMETERS,
+    )
 
     if settings.BACKEND_CORS_ORIGINS:
         app.add_middleware(
@@ -27,10 +33,9 @@ def create_app() -> FastAPI:
         )
 
     app.add_pagination()
-    app.override_dependency(*database.override_session)
     app.include_router(api_router, prefix=settings.API)
+    app.override_dependency(*database.override_session)
     app.add_exception_handler(DBAPIError, database_error_handler)
     app.add_exception_handler(HTTPException, http_exception_handler)
-    app.add_event_handler(settings.STARTUP, events.startup_event(settings))
 
     return app

@@ -10,8 +10,9 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.append(str(BASE_DIR))
 
-from internal.config import settings  # noqa: E402
-from internal.entity.base import Base  # noqa: E402
+from internal.config import settings
+from internal.entity.application import Application
+from internal.entity.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -28,7 +29,7 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    return settings.SQLALCHEMY_DATABASE_URI
+    return settings.DATABASE_URI
 
 
 def run_migrations_offline():

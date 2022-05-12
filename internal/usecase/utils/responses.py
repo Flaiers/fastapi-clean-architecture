@@ -15,16 +15,6 @@ class response_schema(dict):  # noqa: WPS600, N801
         self.example = example
         self.description = description
         self.status_code = status_code
-        self.schema = lambda example, description, status_code: {
-            status_code: {
-                'description': description,
-                'content': {
-                    'application/json': {
-                        'example': example,
-                    },
-                },
-            },
-        }
         super().__init__(self.schema(example, description, status_code))
 
     def __call__(self, detail: str = '', description: str = ''):
@@ -35,6 +25,23 @@ class response_schema(dict):  # noqa: WPS600, N801
             description or self.description,
             self.status_code,
         )
+
+    def schema(
+        self,
+        example: Dict[Any, Any],
+        description: str,
+        status_code: int,
+    ):
+        return {
+            status_code: {
+                'description': description,
+                'content': {
+                    'application/json': {
+                        'example': example,
+                    },
+                },
+            },
+        }
 
 
 class SuccessfulResponse(JSONResponse):

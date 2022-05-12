@@ -5,11 +5,14 @@ from fastapi import Depends, params
 from sqlalchemy import orm
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import (
+    DeclarativeMeta,
+    declarative_base,
+)
 
 from package.sqlalchemy import get_session
 
-Base = declarative_base()
+Base: DeclarativeMeta = declarative_base()
 Model = TypeVar('Model', bound=Base)
 
 
@@ -30,10 +33,10 @@ class Repository(Generic[Model]):
     def create(self, **fields) -> Model:
         return self.model(**fields)
 
-    async def find(self, *options, **fields) -> Result:
-        statement = sa.select(self.model).filter_by(**fields).options(
+    async def find(self, *options, clause: tuple = (), **fields) -> Result:
+        statement = sa.select(self.model).options(
             *(orm.joinedload(option) for option in options),
-        )
+        ).where(*clause).filter_by(**fields)
         return await self.session.execute(statement)
 
     async def delete(self, instance: Model) -> None:
