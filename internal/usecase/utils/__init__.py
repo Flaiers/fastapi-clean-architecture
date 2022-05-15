@@ -1,4 +1,3 @@
-from .applications import FastAPI
 from .exception_handlers import (
     database_error_handler,
     http_exception_handler,

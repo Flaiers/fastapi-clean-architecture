@@ -24,7 +24,7 @@ async def create_application(
 
 
 @router.delete(
-    path='',
+    path='/{application_id}',
     responses=response.RESPONSE_404_NOT_FOUND(
         'Application not found',
     ) | SuccessfulResponse.schema(),
@@ -40,5 +40,5 @@ async def delete_application(
             status_code=status.HTTP_404_NOT_FOUND,
         )
 
-    await application_service.delete(application_id)
+    await application_service.delete(instance)
     return SuccessfulResponse()

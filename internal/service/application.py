@@ -8,8 +8,7 @@ from package.sqlalchemy.repository import Inject, Repository
 class ApplicationService(object):
 
     def __init__(
-        self,
-        repository: Repository[Application] = Inject(Application),
+        self, repository: Repository[Application] = Inject(Application),
     ) -> None:
         self.repository = repository
 
