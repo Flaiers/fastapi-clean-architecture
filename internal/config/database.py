@@ -37,7 +37,7 @@ def async_session(url: str) -> Callable[..., AsyncSessionGenerator]:
 
 def sync_session(url: str) -> orm.scoped_session:
     engine = create_engine(
-        url.replace('+asyncpg', ''), pool_pre_ping=True, future=True,
+        url, pool_pre_ping=True, future=True,
     )
     factory = orm.sessionmaker(
         engine, autoflush=False, expire_on_commit=False,
@@ -45,5 +45,5 @@ def sync_session(url: str) -> orm.scoped_session:
     return orm.scoped_session(factory)
 
 
-current_session = sync_session(settings.DATABASE_URI)
 override_session = get_session, async_session(settings.DATABASE_URI)
+current_session = sync_session(settings.DATABASE_URI.replace('+asyncpg', ''))

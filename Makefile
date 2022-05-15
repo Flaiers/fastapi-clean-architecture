@@ -15,18 +15,15 @@ help: ## Display this help screen
 
 .PHONY: install
 install: ## Installations
-	poetry env use python;  \
-	poetry install; \
+	poetry env use python
+	poetry install
 	poetry run pre-commit install
 
 .PHONY: lint
 lint: ## Run linters
+	poetry run isort .
 	poetry run flake8
 	poetry run mypy .
-
-.PHONY: lint-imports
-lint-imports: ## Run imports linter
-	poetry run isort .
 
 .PHONY: run
 run: ## Run applications
