@@ -20,7 +20,7 @@ async def create_application(
     application_service: ApplicationService = Depends(),
 ) -> SuccessfulResponse:
     await application_service.create(dto)
-    return SuccessfulResponse(status_code=status.HTTP_201_CREATED)
+    return SuccessfulResponse(status.HTTP_201_CREATED)
 
 
 @router.delete(
@@ -40,5 +40,5 @@ async def delete_application(
             status_code=status.HTTP_404_NOT_FOUND,
         )
 
-    await application_service.delete(instance)
+    await application_service.remove(instance)
     return SuccessfulResponse()

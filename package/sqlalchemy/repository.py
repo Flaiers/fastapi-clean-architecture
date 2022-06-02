@@ -2,7 +2,6 @@ from typing import Any, Callable, Generic, Type, TypeVar
 
 import sqlalchemy as sa
 from fastapi import Depends, params
-from sqlalchemy import orm
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.declarative import (
@@ -33,15 +32,23 @@ class Repository(Generic[Model]):
     def create(self, **fields) -> Model:
         return self.model(**fields)
 
-    async def find(self, *options, clause: tuple = (), **fields) -> Result:
-        statement = sa.select(self.model).options(
-            *(orm.joinedload(option) for option in options),
-        ).where(*clause).filter_by(**fields)
+    async def find(self, *where, **fields) -> Result:
+        statement = sa.select(self.model).where(*where).filter_by(**fields)
         return await self.session.execute(statement)
 
-    async def delete(self, instance: Model) -> None:
+    async def delete(self, *where, **fields) -> None:
+        statement = sa.delete(self.model).where(*where).filter_by(**fields)
+        await self.session.execute(statement)
+        await self.session.commit()
+
+    async def remove(self, instance: Model) -> None:
         await self.session.delete(instance)
         await self.session.commit()
+
+    async def merge(self, instance: Model) -> Model:
+        instance = await self.session.merge(instance)
+        await self.session.commit()
+        return instance
 
     async def save(self, instance: Model) -> Model:
         exist = (

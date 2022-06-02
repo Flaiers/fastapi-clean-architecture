@@ -6,7 +6,7 @@ from sqlalchemy.exc import DBAPIError
 async def database_error_handler(
     _: Request, exc: DBAPIError,
 ) -> JSONResponse:
-    detail = str(exc.orig).split('DETAIL:  ')[-1].replace('.', '')
+    detail = str(exc.orig).split('DETAIL:  ')[-1].rstrip('.')
     return JSONResponse(
         content={'successful': False, 'detail': detail},
         status_code=status.HTTP_400_BAD_REQUEST,

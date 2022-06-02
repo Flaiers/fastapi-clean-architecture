@@ -10,7 +10,7 @@ from package.sqlalchemy import get_session
 AsyncSessionGenerator = AsyncGenerator[AsyncSession, None]
 
 
-async def init_db(url: str) -> None:
+async def create_database(url: str) -> None:
     engine = create_async_engine(
         url, pool_pre_ping=True, future=True,
     )
