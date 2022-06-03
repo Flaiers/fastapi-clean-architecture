@@ -25,7 +25,7 @@ def async_session(url: str) -> Callable[..., AsyncSessionGenerator]:
         url, pool_pre_ping=True, future=True,
     )
     factory = orm.sessionmaker(
-        engine, class_=AsyncSession, expire_on_commit=False,
+        engine, class_=AsyncSession, autoflush=False, expire_on_commit=False,
     )
 
     async def get_session() -> AsyncSessionGenerator:  # noqa: WPS430, WPS442

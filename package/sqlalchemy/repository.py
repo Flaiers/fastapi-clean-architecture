@@ -1,7 +1,8 @@
-from typing import Any, Callable, Generic, Type, TypeVar
+from typing import Any, Callable, Generic, Sequence, Type, TypeVar
 
 import sqlalchemy as sa
 from fastapi import Depends, params
+from multimethod import multimethod as overload
 from sqlalchemy.engine import Result
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.declarative import (
@@ -36,12 +37,20 @@ class Repository(Generic[Model]):
         statement = sa.select(self.model).where(*where).filter_by(**fields)
         return await self.session.execute(statement)
 
+    @overload
     async def delete(self, *where, **fields) -> None:
         statement = sa.delete(self.model).where(*where).filter_by(**fields)
         await self.session.execute(statement)
         await self.session.commit()
 
-    async def remove(self, instance: Model) -> None:
+    @overload
+    async def delete(self, instances: Sequence[Model]) -> None:
+        for instance in instances:
+            await self.session.delete(instance)
+        await self.session.commit()
+
+    @overload
+    async def delete(self, instance: Model) -> None:
         await self.session.delete(instance)
         await self.session.commit()
 
@@ -61,6 +70,7 @@ class Repository(Generic[Model]):
         else:
             self.session.add(instance)
 
+        await self.session.flush()
         await self.session.commit()
         return instance
 

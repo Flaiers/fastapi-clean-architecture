@@ -28,6 +28,7 @@ alembic = "^1.7.7"
 SQLAlchemy = "^1.4.32"
 asyncpg = "^0.25.0"
 psycopg2-binary = "^2.9.3"
+multimethod = "^1.8"
 
 
 [tool.poetry.dev-dependencies]

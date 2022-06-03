@@ -22,5 +22,5 @@ class ApplicationService(object):
         query_result = await self.repository.find(id=application_id)
         return query_result.scalar_one_or_none()
 
-    async def remove(self, application: Application) -> None:
-        await self.repository.remove(application)
+    async def delete(self, application: Application) -> None:
+        await self.repository.delete(application)
