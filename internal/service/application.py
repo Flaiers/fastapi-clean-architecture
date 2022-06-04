@@ -21,4 +21,4 @@ class ApplicationService(object):
 
     async def delete(self, application_id: uuid.UUID) -> None:
         application = await self.find_one_or_fail(application_id)
-        await self.repository.delete(application)
+        await self.repository.remove(application)

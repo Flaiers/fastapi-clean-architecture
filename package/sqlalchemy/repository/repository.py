@@ -29,10 +29,23 @@ class Repository(AbstractRepository, Generic[Model]):
             if pk.server_default is not None
         )
 
+    @overload
     def create(self, **attrs) -> Model:
         return self.model(**attrs)
 
+    @overload
+    def create(self, attrs: Dict[str, Any]) -> Model:
+        return self.model(**attrs)
+
+    @overload
     def merge(self, instance: Model, **attrs) -> Model:
+        for attr_key, attr_value in attrs.items():
+            setattr(instance, attr_key, attr_value)
+
+        return instance
+
+    @overload
+    def merge(self, instance: Model, attrs: Dict[str, Any]) -> Model:
         for attr_key, attr_value in attrs.items():
             setattr(instance, attr_key, attr_value)
 
@@ -40,37 +53,44 @@ class Repository(AbstractRepository, Generic[Model]):
 
     def has_pk(self, instance: Model) -> bool:
         return bool([
-            pk
+            attr
             for pk in self.primary_keys
-            if getattr(instance, pk.name) is not None
+            if (attr := getattr(instance, pk.name)) is not None
         ])
 
     def get_pk(self, instance: Model) -> Dict[str, Any] | Any:
-        primary_keys = {}
-        for pk in self.primary_keys:
-            attr = getattr(instance, pk.name)
-            if attr is not None:
-                primary_keys[pk.name] = attr
+        primary_keys = {
+            pk.name: attr
+            for pk in self.primary_keys
+            if (attr := getattr(instance, pk.name)) is not None
+        }
 
         if len(primary_keys) > 1:
             return primary_keys
 
         return next(iter(primary_keys.values()))
 
-    async def find(self, *where, **attrs) -> Model:
+    async def count(self, *where, **attrs) -> int:
+        statement = sa.select(sa.func.count(
+        )).select_from(self.model).where(*where).filter_by(**attrs)
+        return await self.session.scalar(statement)
+
+    async def delete(self, *where, **attrs) -> None:
+        statement = sa.delete(self.model).where(*where).filter_by(**attrs)
+        await self.session.execute(statement)
+        await self.session.commit()
+
+    async def find(self, *where, **attrs) -> Sequence[Model]:
         statement = sa.select(self.model).where(*where).filter_by(**attrs)
-        query_result = await self.session.execute(statement)
-        return query_result.unique().scalars().all()
+        return await self.session.scalars(statement).unique().all()
 
     async def find_one(self, *where, **attrs) -> Model:
         statement = sa.select(self.model).where(*where).filter_by(**attrs)
-        query_result = await self.session.execute(statement)
-        return query_result.unique().scalar()
+        return await self.session.scalar(statement).unique().first()
 
-    async def find_one_or_none(self, *where, **attrs) -> Model:
+    async def find_one_or_none(self, *where, **attrs) -> Model | None:
         statement = sa.select(self.model).where(*where).filter_by(**attrs)
-        query_result = await self.session.execute(statement)
-        return query_result.unique().scalar_one_or_none()
+        return await self.session.scalar(statement).unique().one_or_none()
 
     async def find_one_or_fail(self, *where, **attrs) -> Model:
         instance = await self.find_one_or_none(*where, **attrs)
@@ -80,18 +100,12 @@ class Repository(AbstractRepository, Generic[Model]):
         return instance
 
     @overload
-    async def delete(self, *where, **attrs) -> None:
-        statement = sa.delete(self.model).where(*where).filter_by(**attrs)
-        await self.session.execute(statement)
-        await self.session.commit()
-
-    @overload
-    async def delete(self, instance: Model) -> None:
+    async def remove(self, instance: Model) -> None:
         await self.session.delete(instance)
         await self.session.commit()
 
     @overload
-    async def delete(self, instances: Sequence[Model]) -> None:
+    async def remove(self, instances: Sequence[Model]) -> None:
         for instance in instances:
             await self.session.delete(instance)
 
@@ -104,7 +118,7 @@ class Repository(AbstractRepository, Generic[Model]):
         return instance
 
     @overload
-    async def pre_save(self, instances: Sequence[Model]) -> Model:
+    async def pre_save(self, instances: Sequence[Model]) -> Sequence[Model]:
         self.session.add_all(instances)
         await self.session.flush()
         return instances
@@ -116,7 +130,7 @@ class Repository(AbstractRepository, Generic[Model]):
         return instance
 
     @overload
-    async def save(self, instances: Sequence[Model]) -> Model:
+    async def save(self, instances: Sequence[Model]) -> Sequence[Model]:
         await self.pre_save(instances)
         await self.session.commit()
         return instances
