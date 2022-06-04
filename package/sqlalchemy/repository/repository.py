@@ -75,7 +75,7 @@ class Repository(AbstractRepository, Generic[Model]):
     async def find_one_or_fail(self, *where, **attrs) -> Model:
         instance = await self.find_one_or_none(*where, **attrs)
         if instance is None:
-            raise NoResultFound('{0} not found'.format(self.model))
+            raise NoResultFound('{0.__name__} not found'.format(self.model))
 
         return instance
 

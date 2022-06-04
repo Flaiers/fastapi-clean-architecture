@@ -1,2 +1,2 @@
 from .abstract import AbstractRepository
-from .repository import Repository
+from .repository import Inject, Repository

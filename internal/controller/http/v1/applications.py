@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 
 from internal.dto.application import ApplicationRead, BaseApplication
 from internal.service.application import ApplicationService
@@ -31,12 +31,5 @@ async def delete_application(
     application_id: uuid.UUID,
     application_service: ApplicationService = Depends(),
 ) -> SuccessfulResponse:
-    instance = await application_service.find_one_or_none(application_id)
-    if instance is None:
-        raise HTTPException(
-            detail='Application not found',
-            status_code=status.HTTP_404_NOT_FOUND,
-        )
-
-    await application_service.delete(instance)
+    await application_service.delete(application_id)
     return SuccessfulResponse()
