@@ -214,13 +214,13 @@ pydantic = ">=1.7.2"
 
 [package.extras]
 gino = ["gino[starlette] (>=1.0.1)", "SQLAlchemy (>=1.3.20)"]
-all = ["gino[starlette] (>=1.0.1)", "SQLAlchemy (>=1.3.20)", "databases[mysql,sqlite,postgresql] (>=0.4.0)", "orm (>=0.1.5)", "tortoise-orm[asyncpg,aiosqlite,aiomysql] (>=0.16.18,<0.20.0)", "asyncpg (>=0.24.0)", "ormar (>=0.10.5)", "Django (<3.3.0)", "piccolo (>=0.29,<0.35)", "motor (>=2.5.1,<3.0.0)", "mongoengine (>=0.23.1,<0.25.0)"]
+all = ["gino[starlette] (>=1.0.1)", "SQLAlchemy (>=1.3.20)", "databases[postgresql,sqlite,mysql] (>=0.4.0)", "orm (>=0.1.5)", "tortoise-orm[asyncpg,aiomysql,aiosqlite] (>=0.16.18,<0.20.0)", "asyncpg (>=0.24.0)", "ormar (>=0.10.5)", "Django (<3.3.0)", "piccolo (>=0.29,<0.35)", "motor (>=2.5.1,<3.0.0)", "mongoengine (>=0.23.1,<0.25.0)"]
 sqlalchemy = ["SQLAlchemy (>=1.3.20)"]
 asyncpg = ["SQLAlchemy (>=1.3.20)", "asyncpg (>=0.24.0)"]
-databases = ["databases[mysql,sqlite,postgresql] (>=0.4.0)"]
-orm = ["databases[mysql,sqlite,postgresql] (>=0.4.0)", "orm (>=0.1.5)", "typesystem (>=0.2.0,<0.3.0)"]
-django = ["databases[mysql,sqlite,postgresql] (>=0.4.0)", "Django (<3.3.0)"]
-tortoise = ["tortoise-orm[asyncpg,aiosqlite,aiomysql] (>=0.16.18,<0.20.0)"]
+databases = ["databases[postgresql,sqlite,mysql] (>=0.4.0)"]
+orm = ["databases[postgresql,sqlite,mysql] (>=0.4.0)", "orm (>=0.1.5)", "typesystem (>=0.2.0,<0.3.0)"]
+django = ["databases[postgresql,sqlite,mysql] (>=0.4.0)", "Django (<3.3.0)"]
+tortoise = ["tortoise-orm[asyncpg,aiomysql,aiosqlite] (>=0.16.18,<0.20.0)"]
 ormar = ["ormar (>=0.10.5)"]
 piccolo = ["piccolo (>=0.29,<0.35)"]
 motor = ["motor (>=2.5.1,<3.0.0)"]
@@ -587,6 +587,14 @@ description = "McCabe checker, plugin for flake8"
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "multimethod"
+version = "1.8"
+description = "Multiple argument dispatching."
+category = "main"
+optional = false
+python-versions = ">=3.7"
 
 [[package]]
 name = "mypy"
@@ -980,7 +988,7 @@ email = ["email-validator"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "761887c18619767b67179dfe2d61dd1f8149fa01aa374aae778c272cb66f4eda"
+content-hash = "87358dc5089c54de37799712bd2822ff23a5954870c6e3e226d6a1e87586efb9"
 
 [metadata.files]
 alembic = [
@@ -1287,6 +1295,10 @@ markupsafe = [
 mccabe = [
     {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
+]
+multimethod = [
+    {file = "multimethod-1.8-py3-none-any.whl", hash = "sha256:ebff0b254d9373b587a99fdd5c238fc0e76861b802704a56d9a71d78aa7d097f"},
+    {file = "multimethod-1.8.tar.gz", hash = "sha256:10f79f40c35c7cc87c40efa753960900429705e0c08078a084136cb8ce67b840"},
 ]
 mypy = [
     {file = "mypy-0.942-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:5bf44840fb43ac4074636fd47ee476d73f0039f4f54e86d7265077dc199be24d"},

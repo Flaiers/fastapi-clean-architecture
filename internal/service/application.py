@@ -16,11 +16,9 @@ class ApplicationService(object):
         application = self.repository.create(**dto.dict())
         return await self.repository.save(application)
 
-    async def find_one_or_none(
-        self, application_id: uuid.UUID,
-    ) -> Application | None:
-        query_result = await self.repository.find(id=application_id)
-        return query_result.scalar_one_or_none()
+    async def find_one_or_fail(self, application_id: uuid.UUID) -> Application:
+        return await self.repository.find_one_or_fail(id=application_id)
 
-    async def delete(self, application: Application) -> None:
-        return await self.repository.delete(application)
+    async def delete(self, application_id: uuid.UUID) -> None:
+        application = await self.find_one_or_fail(application_id)
+        await self.repository.delete(application)

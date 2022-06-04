@@ -1,8 +1,8 @@
-from internal.config.database import init_db
+from internal.config.database import create_database
 
 
 def startup_database(url: str):
     async def wrapper():
-        await init_db(url)
+        await create_database(url)
 
     return wrapper

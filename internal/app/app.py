@@ -1,12 +1,13 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import api
-from sqlalchemy.exc import DBAPIError
+from sqlalchemy.exc import DBAPIError, NoResultFound
 
 from internal.config import database, settings
 from internal.controller.http.router import api_router
 from internal.usecase.utils import (
     database_error_handler,
+    database_not_found_handler,
     http_exception_handler,
 )
 
@@ -36,6 +37,7 @@ def create_app() -> FastAPI:
     app.include_router(api_router, prefix=settings.API)
     app.add_exception_handler(DBAPIError, database_error_handler)
     app.add_exception_handler(HTTPException, http_exception_handler)
+    app.add_exception_handler(NoResultFound, database_not_found_handler)
     app.dependency_overrides.setdefault(*database.override_session)
 
     return app
