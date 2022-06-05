@@ -82,18 +82,14 @@ class Repository(AbstractRepository, Generic[Model]):
 
     async def find(self, *where, **attrs) -> Sequence[Model]:
         statement = sa.select(self.model).where(*where).filter_by(**attrs)
-        return await self.session.scalars(statement).unique().all()
+        return (await self.session.scalars(statement)).unique().all()
 
-    async def find_one(self, *where, **attrs) -> Model:
+    async def find_one(self, *where, **attrs) -> Model | None:
         statement = sa.select(self.model).where(*where).filter_by(**attrs)
-        return await self.session.scalar(statement).unique().first()
-
-    async def find_one_or_none(self, *where, **attrs) -> Model | None:
-        statement = sa.select(self.model).where(*where).filter_by(**attrs)
-        return await self.session.scalar(statement).unique().one_or_none()
+        return await self.session.scalar(statement)
 
     async def find_one_or_fail(self, *where, **attrs) -> Model:
-        instance = await self.find_one_or_none(*where, **attrs)
+        instance = await self.find_one(*where, **attrs)
         if instance is None:
             raise NoResultFound('{0.__name__} not found'.format(self.model))
 

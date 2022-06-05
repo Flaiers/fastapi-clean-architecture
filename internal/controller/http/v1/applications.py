@@ -1,12 +1,28 @@
 import uuid
+from typing import Any
 
 from fastapi import APIRouter, Depends, status
+from fastapi_pagination import Page, Params, paginate
 
-from internal.dto.application import ApplicationRead, BaseApplication
+from internal.dto.application import (
+    ApplicationFilter,
+    ApplicationRead,
+    BaseApplication,
+)
 from internal.service.application import ApplicationService
 from internal.usecase.utils import SuccessfulResponse, response
 
 router = APIRouter()
+
+
+@router.get('', response_model=Page[ApplicationRead])
+async def read_applications(
+    dto: ApplicationFilter = Depends(),
+    pagination_params: Params = Depends(),
+    application_service: ApplicationService = Depends(),
+) -> Any:
+    applications = await application_service.find(dto)
+    return paginate(applications, pagination_params)
 
 
 @router.post(
