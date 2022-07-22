@@ -33,13 +33,13 @@ async def read_applications(
 async def create_application(
     dto: BaseApplication,
     application_service: ApplicationService = Depends(),
-) -> SuccessfulResponse:
+) -> ApplicationRead:
     return await application_service.create(dto)
 
 
 @router.delete(
     path='/{application_id}',
-    responses=response.RESPONSE_404_NOT_FOUND(
+    responses=response.HTTP_404_NOT_FOUND(
         'Application not found',
     ) | SuccessfulResponse.schema(),
 )
