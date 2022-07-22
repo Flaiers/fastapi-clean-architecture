@@ -1,0 +1,38 @@
+version: '3.9'
+services:
+
+  db:
+    container_name: fastapi_clean_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    image: postgres:14-alpine
+    networks:
+      - network
+    ports:
+      - ${HOST_DB_PORT}:${DB_PORT}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.backend
+    container_name: fastapi_clean_backend
+    depends_on:
+      - db
+    env_file:
+      - ${ENV_FILE}
+    networks:
+      - network
+    ports:
+      - ${ADMIN_PORT}:8080
+      - ${BACKEND_PORT}:8000
+
+networks:
+  network:
+    driver: bridge
+
+volumes:
+  db_data:
