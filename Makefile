@@ -70,6 +70,10 @@ compose-up: ## Create and start containers
 compose-ps: ## List containers
 	$(docker_compose) ps
 
+.PHONY: compose-ls
+compose-ls: ## List running compose projects
+	$(docker_compose) ls
+
 .PHONY: compose-exec
 compose-exec: ## Execute a command in a running container
 	$(docker_compose) exec backend bash
@@ -92,7 +96,7 @@ compose-down: ## Stop and remove containers, networks
 
 .PHONY: docker-rm-volume
 docker-rm-volume: ## Remove db volume
-	docker volume rm fastapi_clean_db_data fastapi_clean_rabbitmq_data
+	docker volume rm -f fastapi_clean_db_data fastapi_clean_rabbitmq_data
 
 .PHONY: docker-clean
 docker-clean: ## Remove unused data
