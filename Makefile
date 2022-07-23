@@ -7,8 +7,8 @@ endif
 ifneq ($(wildcard docker/.env),)
     ENV_FILE = .env
 endif
-ifneq ($(wildcard .env),)
-    include .env
+ifeq ($(and $(wildcard .env),$(COMPOSE_PROJECT_NAME)),)
+	include .env
 endif
 
 docker_compose = docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE)
@@ -90,7 +90,7 @@ compose-down: ## Stop and remove containers, networks
 
 .PHONY: docker-rm-volume
 docker-rm-volume: ## Remove db volume
-	docker volume rm fastapi_clean_db_data
+	docker volume rm fastapi_clean_db_data fastapi_clean_rabbitmq_data
 
 .PHONY: docker-clean
 docker-clean: ## Remove unused data

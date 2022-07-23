@@ -30,6 +30,18 @@ services:
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
+  migration:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.migration
+    container_name: fastapi_clean_migration
+    depends_on:
+      - db
+    env_file:
+      - ${ENV_FILE}
+    networks:
+      - network
+
   backend:
     build:
       context: ..
@@ -38,6 +50,7 @@ services:
     depends_on:
       - db
       - rabbitmq
+      - migration
     env_file:
       - ${ENV_FILE}
     networks:
