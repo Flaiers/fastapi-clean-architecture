@@ -1,8 +1,8 @@
-ifneq ($(wildcard env/example.env),)
-    include env/example.env
+ifneq ($(wildcard .env.example),)
+    include .env.example
 endif
-ifneq ($(wildcard env/.env),)
-    include env/.env
+ifneq ($(wildcard .env),)
+    include .env
 endif
 
 export
