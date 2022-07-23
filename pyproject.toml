@@ -26,6 +26,7 @@ pydantic = {extras = ["email", "dotenv"], version = "^1.9.1"}
 
 alembic = "^1.8.1"
 SQLAlchemy = "^1.4.39"
+pytorm = "^0.0.6"
 asyncpg = "^0.25.0"
 psycopg2-binary = "^2.9.3"
 multimethod = "^1.8"

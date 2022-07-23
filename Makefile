@@ -7,8 +7,10 @@ endif
 ifneq ($(wildcard docker/.env),)
     ENV_FILE = .env
 endif
-ifeq ($(and $(wildcard .env),$(COMPOSE_PROJECT_NAME)),)
-	include .env
+ifneq ($(wildcard .env),)
+	ifeq ($(COMPOSE_PROJECT_NAME),)
+		include .env
+	endif
 endif
 
 docker_compose = docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE)
