@@ -1,37 +1,48 @@
-from typing import Any, Dict
+from typing import Any, Dict, TypedDict
 
 from fastapi import status
 from fastapi.responses import JSONResponse
+from typing_extensions import NotRequired
 
 
-class response_schema(dict):  # noqa: WPS600, N801
+class ResponseExample(TypedDict):
+
+    successful: bool
+    detail: NotRequired[str]
+
+
+class ResponseSchema(dict):  # noqa: WPS600
 
     def __init__(
         self,
-        example: Dict[Any, Any],
-        description: str,
         status_code: int,
-    ):
+        description: str,
+        example: ResponseExample,
+    ) -> None:
         self.example = example
-        self.description = description
         self.status_code = status_code
-        super().__init__(self.schema(example, description, status_code))
+        self.description = description
+        super().__init__(self.schema(
+            example=example,
+            status_code=status_code,
+            description=description,
+        ))
 
     def __call__(self, detail: str = '', description: str = ''):
         example = self.example.copy()
         example['detail'] = detail or example['detail']
         return self.schema(
-            example,
-            description or self.description,
-            self.status_code,
+            example=example,
+            status_code=self.status_code,
+            description=description or self.description,
         )
 
     def schema(
         self,
-        example: Dict[Any, Any],
-        description: str,
         status_code: int,
-    ):
+        description: str,
+        example: ResponseExample,
+    ) -> Dict[int, Dict[str, Any]]:
         return {
             status_code: {
                 'description': description,
@@ -56,9 +67,9 @@ class SuccessfulResponse(JSONResponse):
         super().__init__(**kwargs)
 
     @classmethod
-    def schema(cls, status_code: int = status.HTTP_200_OK):
-        return response_schema(
-            example={'successful': True},
-            description='Successful Response',
+    def schema(cls, status_code: int = status.HTTP_200_OK) -> ResponseSchema:
+        return ResponseSchema(
             status_code=status_code,
+            description='Successful Response',
+            example=ResponseExample(successful=True),
         )

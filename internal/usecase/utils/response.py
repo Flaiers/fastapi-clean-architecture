@@ -1,7 +1,7 @@
-from internal.usecase.utils import response_schema
+from internal.usecase.utils import ResponseExample, ResponseSchema
 
-HTTP_404_NOT_FOUND = response_schema(
-    example={'successful': False, 'detail': 'Not found'},
-    description='Not found',
+HTTP_404_NOT_FOUND = ResponseSchema(
     status_code=404,
+    description='Not found',
+    example=ResponseExample(successful=False, detail='Not found'),
 )
