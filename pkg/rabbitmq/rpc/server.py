@@ -1,14 +1,12 @@
-from typing import Type
-
 import aio_pika
-from aio_pika.patterns import RPC, JsonRPC
 
 from pkg.rabbitmq.rpc import RPCRouter
+from pkg.rabbitmq.rpc.types import JsonRPC, UnionRPC
 
 
 class RPCServer(object):
 
-    def __init__(self, url, rpc: Type[RPC] | Type[JsonRPC] = RPC) -> None:
+    def __init__(self, url: str, rpc: UnionRPC = JsonRPC) -> None:
         self.url = url
         self.RPC = rpc
         self.router = RPCRouter()
