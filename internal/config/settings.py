@@ -1,14 +1,22 @@
 from typing import Any, Dict, List
 
-from pydantic import AnyHttpUrl, BaseSettings, PostgresDsn, validator
+from pydantic import (
+    AmqpDsn,
+    AnyHttpUrl,
+    BaseSettings,
+    PostgresDsn,
+    validator,
+)
 
 
 class Settings(BaseSettings):
 
     API: str = '/api'
+    RPC: str = '/rpc'
     DOCS: str = '/docs'
     ADMIN: str = '/admin'
     STARTUP: str = 'startup'
+    SHUTDOWN: str = 'shutdown'
     SECRET_KEY: str
     FLASK_ADMIN_SWATCH: str = 'cerulean'
 
@@ -55,6 +63,29 @@ class Settings(BaseSettings):
             host=values.get('DB_HOST'),
             port=values.get('DB_PORT'),
             path='/{0}'.format(values.get('DB_NAME')),
+        )
+
+    RABBITMQ_HOST: str
+    RABBITMQ_PORT: str
+    RABBITMQ_NAME: str
+    RABBITMQ_USER: str
+    RABBITMQ_PASSWORD: str
+    RABBITMQ_URI: AmqpDsn | None = None
+
+    @validator('RABBITMQ_URI', pre=True)
+    def assemble_rabbitmq_connection(
+        cls, value: str | None, values: Dict[str, Any],  # noqa: N805, WPS110
+    ) -> str:
+        if isinstance(value, str):
+            return value
+
+        return AmqpDsn.build(
+            scheme='amqp',
+            user=values.get('RABBITMQ_USER'),
+            password=values.get('RABBITMQ_PASSWORD'),
+            host=values.get('RABBITMQ_HOST'),
+            port=values.get('RABBITMQ_PORT'),
+            path='/{0}'.format(values.get('RABBITMQ_NAME')),
         )
 
     class Config(object):

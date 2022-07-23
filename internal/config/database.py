@@ -23,7 +23,7 @@ async def create_database(url: str) -> None:
 
 def async_session(
     url: str, *, wrap: Callable[..., Any] | None = None,
-) -> Callable[..., AsyncSessionGenerator | AsyncContextManager]:
+) -> Callable[..., AsyncSessionGenerator] | AsyncContextManager[Any]:
     engine = create_async_engine(
         url, pool_pre_ping=True, future=True,
     )
