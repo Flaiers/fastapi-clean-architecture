@@ -1,6 +1,6 @@
 # Git
-.git
-.github
+.git/
+.github/
 .gitignore
 .gitattributes
 
@@ -16,6 +16,7 @@
 # Docker
 docker-compose.yml
 Dockerfile
+docker/
 .docker
 .dockerignore
 
