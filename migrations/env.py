@@ -10,9 +10,9 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 BASE_DIR = Path(__file__).resolve().parents[1]
 sys.path.append(str(BASE_DIR))
 
-from internal.config import settings
-from internal.entity.application import Application
-from internal.entity.base import Base
+from internal.config import settings  # noqa: E402
+from internal.entity import application  # noqa: F401, E402
+from internal.entity.base import Base  # noqa: E402
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
