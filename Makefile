@@ -2,7 +2,9 @@ ifneq ($(wildcard docker/.env.example),)
     ENV_FILE = .env.example
 endif
 ifneq ($(wildcard .env.example),)
-    include .env.example
+	ifeq ($(COMPOSE_PROJECT_NAME),)
+    	include .env.example
+	endif
 endif
 ifneq ($(wildcard docker/.env),)
     ENV_FILE = .env
@@ -64,7 +66,11 @@ compose-build: ## Build or rebuild services
 
 .PHONY: compose-up
 compose-up: ## Create and start containers
-	$(docker_compose) up -d && $(docker_compose) logs -f
+	$(docker_compose) up -d
+
+.PHONY: compose-logs
+compose-logs: ## View output from containers
+	$(docker_compose) logs -f
 
 .PHONY: compose-ps
 compose-ps: ## List containers
