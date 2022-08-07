@@ -24,7 +24,9 @@ def startup_rpc_client(rpc: RPCClient):
     async def wrapper():
         loop = asyncio.get_event_loop()
         rpc.set_event_loop(loop)
-        rpc.state.rpc = await rpc.connect()
+        rpc.state.rpc = await rpc.connect(
+            durable=True, auto_delete=True,
+        )
 
     return wrapper
 

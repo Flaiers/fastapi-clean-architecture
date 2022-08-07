@@ -1,3 +1,6 @@
+from asyncio import AbstractEventLoop
+from typing import Type
+
 import aio_pika
 
 from pkg.rabbitmq.rpc import RPCRouter
@@ -6,12 +9,13 @@ from pkg.rabbitmq.rpc.types import JsonRPC, UnionRPC
 
 class RPCServer(object):
 
-    def __init__(self, url: str, rpc: UnionRPC = JsonRPC) -> None:
+    def __init__(self, url: str, rpc: Type[UnionRPC] = JsonRPC) -> None:
         self.url = url
         self.RPC = rpc
         self.router = RPCRouter()
+        self.loop: AbstractEventLoop | None = None
 
-    def set_event_loop(self, loop) -> None:
+    def set_event_loop(self, loop: AbstractEventLoop) -> None:
         self.loop = loop
 
     def include_router(self, router: RPCRouter, *, prefix: str = '') -> None:

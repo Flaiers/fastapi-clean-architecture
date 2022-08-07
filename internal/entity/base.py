@@ -10,6 +10,7 @@ class Base(object):
     __name__: str
     metadata: MetaData
 
+    @classmethod
     @declared_attr
     def __tablename__(cls):  # noqa: N805
         return cls.__name__.lower()
