@@ -9,6 +9,7 @@ from internal.dto.application import (
     ApplicationRead,
     BaseApplication,
 )
+from internal.entity.application import Application
 from internal.service.application import ApplicationService
 from internal.usecase.utils import SuccessfulResponse, response
 
@@ -33,7 +34,7 @@ async def read_applications(
 async def create_application(
     dto: BaseApplication,
     application_service: ApplicationService = Depends(),
-) -> ApplicationRead:
+) -> Application:
     return await application_service.create(dto)
 
 

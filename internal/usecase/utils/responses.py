@@ -37,8 +37,9 @@ class ResponseSchema(dict):  # noqa: WPS600
             description=description or self.description,
         )
 
+    @classmethod
     def schema(
-        self,
+        cls,
         status_code: int,
         description: str,
         example: ResponseExample,
