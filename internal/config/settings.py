@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     RPC: str = '/rpc'
     DOCS: str = '/docs'
     ADMIN: str = '/admin'
+    HEALTH: str = '/health'
     STARTUP: str = 'startup'
     SHUTDOWN: str = 'shutdown'
     SECRET_KEY: str
