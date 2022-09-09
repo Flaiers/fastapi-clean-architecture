@@ -15,7 +15,6 @@ class Settings(BaseSettings):
     RPC: str = '/rpc'
     DOCS: str = '/docs'
     ADMIN: str = '/admin'
-    HEALTH: str = '/health'
     STARTUP: str = 'startup'
     SHUTDOWN: str = 'shutdown'
     SECRET_KEY: str
@@ -32,10 +31,9 @@ class Settings(BaseSettings):
 
     BACKEND_CORS_ORIGINS: List[AnyHttpUrl] = []
 
-    @classmethod
     @validator('BACKEND_CORS_ORIGINS', pre=True)
     def assemble_cors_origins(
-        cls, value: str | List[str],  # noqa: WPS110
+        cls, value: str | List[str],  # noqa: N805, WPS110
     ) -> str | List[str]:
         if isinstance(value, str) and not value.startswith('['):
             return [i.strip() for i in value.split(',')]
@@ -51,10 +49,9 @@ class Settings(BaseSettings):
     DB_NAME: str
     DATABASE_URI: PostgresDsn | None = None
 
-    @classmethod
     @validator('DATABASE_URI', pre=True)
     def assemble_db_connection(
-        cls, value: str | None, values: Dict[str, Any],  # noqa: WPS110
+        cls, value: str | None, values: Dict[str, Any],  # noqa: N805, WPS110
     ) -> str:
         if isinstance(value, str):
             return value
@@ -75,10 +72,9 @@ class Settings(BaseSettings):
     RABBITMQ_PASSWORD: str
     RABBITMQ_URI: AmqpDsn | None = None
 
-    @classmethod
     @validator('RABBITMQ_URI', pre=True)
     def assemble_rabbitmq_connection(
-        cls, value: str | None, values: Dict[str, Any],  # noqa: WPS110
+        cls, value: str | None, values: Dict[str, Any],  # noqa: N805, WPS110
     ) -> str:
         if isinstance(value, str):
             return value

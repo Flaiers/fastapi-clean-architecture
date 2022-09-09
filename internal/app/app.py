@@ -7,7 +7,6 @@ from internal.config import database, events, settings
 from internal.controller.amqp.router import rpc_router
 from internal.controller.http.router import api_router
 from internal.usecase.utils import (
-    SuccessfulResponse,
     database_error_handler,
     database_not_found_handler,
     http_exception_handler,
@@ -43,7 +42,6 @@ def create_app() -> FastAPI:
     server.include_router(rpc_router, prefix=settings.RPC)
     app.dependency_overrides.setdefault(*database.override_session)
 
-    app.add_api_route(settings.HEALTH, lambda: SuccessfulResponse())
     app.add_exception_handler(DBAPIError, database_error_handler)
     app.add_exception_handler(HTTPException, http_exception_handler)
     app.add_exception_handler(NoResultFound, database_not_found_handler)
