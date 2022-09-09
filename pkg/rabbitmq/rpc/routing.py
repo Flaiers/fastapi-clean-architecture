@@ -1,5 +1,7 @@
 from typing import Any, Callable, Dict, List
 
+from aio_pika.abc import Arguments, TimeoutType
+
 
 class RPCRouter(object):
 
@@ -46,6 +48,8 @@ class RPCRouter(object):
         exclusive: bool = False,
         passive: bool = False,
         auto_delete: bool = False,
+        arguments: Arguments = None,
+        timeout: TimeoutType = None,
     ):
         return self.rpc_route(
             path=path,
@@ -53,4 +57,6 @@ class RPCRouter(object):
             exclusive=exclusive,
             passive=passive,
             auto_delete=auto_delete,
+            arguments=arguments or {},
+            timeout=timeout,
         )

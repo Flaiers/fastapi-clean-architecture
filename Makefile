@@ -1,13 +1,13 @@
 ifneq ($(wildcard docker/.env.example),)
-    ENV_FILE = .env.example
+	ENV_FILE = .env.example
 endif
 ifneq ($(wildcard .env.example),)
 	ifeq ($(COMPOSE_PROJECT_NAME),)
-    	include .env.example
+		include .env.example
 	endif
 endif
 ifneq ($(wildcard docker/.env),)
-    ENV_FILE = .env
+	ENV_FILE = .env
 endif
 ifneq ($(wildcard .env),)
 	ifeq ($(COMPOSE_PROJECT_NAME),)
@@ -15,10 +15,7 @@ ifneq ($(wildcard .env),)
 	endif
 endif
 
-docker_compose = docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE)
-
 export
-
 
 .SILENT:
 .PHONY: help
@@ -53,56 +50,68 @@ run-backend: ## Run backend
 	--workers $(WORKERS) --log-level $(LEVEL) --chdir cmd/app main:app
 
 .PHONY: migrate-create
-migrate-create: ## Create new migration
+migrate-create: ## Create a new revision file
 	poetry run alembic revision --autogenerate -m $(name)
 
 .PHONY: migrate-up
-migrate-up: ## Migration up
+migrate-up: ## Upgrade to a later version
 	poetry run alembic upgrade head
+
+.PHONY: migrate-down
+migrate-down: ## Revert to a previous version
+	poetry run alembic downgrade $(revision)
+
+.PHONY: rabbitmq-compose-up
+rabbitmq-compose-up: ## Create and start rabbitmq container
+	docker-compose -f docker/rabbitmq-docker-compose.yml -p rabbitmq --env-file docker/$(ENV_FILE) up -d
 
 .PHONY: compose-build
 compose-build: ## Build or rebuild services
-	$(docker_compose) build
+	docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE) build
+
+.PHONY: compose-convert
+compose-convert: ## Converts the compose file to platform's canonical format
+	docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE) convert
 
 .PHONY: compose-up
-compose-up: ## Create and start containers
-	$(docker_compose) up -d
+compose-up: rabbitmq-compose-up ## Create and start containers
+	docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE) up -d
 
 .PHONY: compose-logs
 compose-logs: ## View output from containers
-	$(docker_compose) logs -f
+	docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE) logs -f
 
 .PHONY: compose-ps
 compose-ps: ## List containers
-	$(docker_compose) ps
+	docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE) ps
 
 .PHONY: compose-ls
 compose-ls: ## List running compose projects
-	$(docker_compose) ls
+	docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE) ls
 
 .PHONY: compose-exec
 compose-exec: ## Execute a command in a running container
-	$(docker_compose) exec backend bash
+	docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE) exec backend bash
 
 .PHONY: compose-start
 compose-start: ## Start services
-	$(docker_compose) start
+	docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE) start
 
 .PHONY: compose-restart
 compose-restart: ## Restart services
-	$(docker_compose) restart
+	docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE) restart
 
 .PHONY: compose-stop
 compose-stop: ## Stop services
-	$(docker_compose) stop
+	docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE) stop
 
 .PHONY: compose-down
 compose-down: ## Stop and remove containers, networks
-	$(docker_compose) down --remove-orphans
+	docker-compose -f docker/docker-compose.yml --env-file docker/$(ENV_FILE) down --remove-orphans
 
 .PHONY: docker-rm-volume
 docker-rm-volume: ## Remove db volume
-	docker volume rm -f fastapi_clean_db_data fastapi_clean_rabbitmq_data
+	docker volume rm -f fastapi_clean_db_data
 
 .PHONY: docker-clean
 docker-clean: ## Remove unused data

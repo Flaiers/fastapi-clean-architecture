@@ -14,21 +14,22 @@ repository = "https://github.com/flaiers/fastapi-clean-architecture"
 [tool.poetry.dependencies]
 python = "^3.10"
 
-uvicorn = "^0.18.2"
+uvicorn = "^0.18.3"
 gunicorn = "^20.1.0"
 
-Flask = "^2.2.1"
+Flask = "^2.2.2"
 Flask-Admin = "^1.6.0"
-fastapi = "^0.79.0"
+fastapi = "^0.79.1"
 fastapi-pagination = "^0.9.3"
 
-pydantic = {extras = ["email", "dotenv"], version = "^1.9.1"}
+pydantic = {extras = ["email", "dotenv"], version = "^1.10.2"}
 
 alembic = "^1.8.1"
-SQLAlchemy = "^1.4.39"
+SQLAlchemy = "^1.4.41"
 pytorm = "^0.1.1"
 asyncpg = "^0.26.0"
-aio-pika = "^8.1.1"
+aio-pika = "^8.2.0"
+psycopg2-binary = "^2.9.3"
 
 
 [tool.poetry.dev-dependencies]

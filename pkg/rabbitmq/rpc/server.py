@@ -9,7 +9,11 @@ from pkg.rabbitmq.rpc.types import JsonRPC, UnionRPC
 
 class RPCServer(object):
 
-    def __init__(self, url: str, rpc: Type[UnionRPC] = JsonRPC) -> None:
+    def __init__(
+        self,
+        url: str,
+        rpc: Type[UnionRPC] = JsonRPC,
+    ) -> None:
         self.url = url
         self.RPC = rpc
         self.router = RPCRouter()

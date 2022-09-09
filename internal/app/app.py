@@ -41,6 +41,7 @@ def create_app() -> FastAPI:
     app.include_router(api_router, prefix=settings.API)
     server.include_router(rpc_router, prefix=settings.RPC)
     app.dependency_overrides.setdefault(*database.override_session)
+
     app.add_exception_handler(DBAPIError, database_error_handler)
     app.add_exception_handler(HTTPException, http_exception_handler)
     app.add_exception_handler(NoResultFound, database_not_found_handler)
