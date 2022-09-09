@@ -15,21 +15,6 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
-  rabbitmq:
-    container_name: fastapi_clean_rabbitmq
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_NAME}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
-    image: rabbitmq:3.10-management-alpine
-    networks:
-      - network
-    ports:
-      - ${HOST_RABBITMQ_PORT}:${RABBITMQ_PORT}
-      - 1${HOST_RABBITMQ_PORT}:1${RABBITMQ_PORT}
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq
-
   migration:
     build:
       context: ..
@@ -49,20 +34,22 @@ services:
     container_name: fastapi_clean_backend
     depends_on:
       - db
-      - rabbitmq
       - migration
     env_file:
       - ${ENV_FILE}
     networks:
       - network
+      - rabbitmq
     ports:
-      - ${ADMIN_PORT}:8080
-      - ${BACKEND_PORT}:8000
+      - ${HOST_ADMIN_PORT}:${ADMIN_PORT}
+      - ${HOST_BACKEND_PORT}:${BACKEND_PORT}
 
 networks:
   network:
     driver: bridge
+  rabbitmq:
+    name: rabbitmq
+    external: true
 
 volumes:
   db_data:
-  rabbitmq_data:

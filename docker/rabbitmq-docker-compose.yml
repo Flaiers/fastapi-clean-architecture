@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+
+  rabbitmq:
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_NAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    image: rabbitmq:3.10-management-alpine
+    networks:
+      - network
+    ports:
+      - ${HOST_RABBITMQ_PORT}:${RABBITMQ_PORT}
+      - 1${HOST_RABBITMQ_PORT}:1${RABBITMQ_PORT}
+    volumes:
+      - data:/var/lib/rabbitmq
+
+networks:
+  network:
+    name: rabbitmq
+    driver: bridge
+
+volumes:
+  data:
