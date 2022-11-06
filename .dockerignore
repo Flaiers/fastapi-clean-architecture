@@ -14,11 +14,10 @@
 .pre-commit-config.yaml
 
 # Docker
-docker-compose.yml
-Dockerfile
 docker/
-.docker
+Dockerfile
 .dockerignore
+docker-compose.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -56,7 +55,9 @@ venv/
 # VS Code
 .vscode/
 
+# EditorConfig
+.editorconfig
+
 # Docs
-docs/
-README.md
+*.md
 LICENSE
