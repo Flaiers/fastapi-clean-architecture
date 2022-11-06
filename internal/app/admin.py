@@ -14,7 +14,7 @@ def create_app() -> Flask:
     admin = Admin(
         app=app,
         url='/',
-        name='Admin',
+        name=settings.NAME,
         template_mode='bootstrap4',
     )
     admin.add_view(ModelView(Application, current_session))

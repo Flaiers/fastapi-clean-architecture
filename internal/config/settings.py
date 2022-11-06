@@ -20,9 +20,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     FLASK_ADMIN_SWATCH: str = 'cerulean'
 
-    PROJECT_NAME: str = 'FastAPI'
-    DESCRIPTION: str = 'FastAPI clean architecture'
-    VERSION: str = '0.9.3'
+    NAME: str = 'FastAPI Clean API'
+    VERSION: str = '1.0'
+    DESCRIPTION: str = 'FastAPI Clean REST API'
 
     SWAGGER_UI_PARAMETERS: Dict[str, Any] = {
         'displayRequestDuration': True,

@@ -16,7 +16,7 @@ from pkg.rabbitmq.rpc import RPCClient, RPCServer
 
 def create_app() -> FastAPI:
     app = FastAPI(
-        title=settings.PROJECT_NAME,
+        title=settings.NAME,
         description=settings.DESCRIPTION,
         version=settings.VERSION,
         openapi_url='{0}/openapi.json'.format(settings.DOCS),
